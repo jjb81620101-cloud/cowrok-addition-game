@@ -66,6 +66,27 @@
     font-weight: 700;
   }
 
+  #lang-btn {
+    position: fixed;
+    top: 14px;
+    right: 14px;
+    z-index: 1000;
+    background: linear-gradient(135deg, #fff, #f0f0f0);
+    border: 2px solid #ddd;
+    border-radius: 50px;
+    padding: 7px 16px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    font-family: inherit;
+    color: #444;
+    transition: transform 0.15s, box-shadow 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #lang-btn:hover { transform: scale(1.06); box-shadow: 0 5px 14px rgba(0,0,0,0.18); }
+  #lang-btn:active { transform: scale(0.95); }
+
   .top-bar {
     display: flex;
     gap: 12px;
@@ -541,17 +562,19 @@
 <div id="confetti-layer"></div>
 <div id="big-badge"></div>
 
+<button id="lang-btn" onclick="toggleLang()">🇹🇼 繁體中文</button>
+
 <div class="title-area">
-  <h1>🌈 การผจญภัยการบวก!</h1>
-  <div class="subtitle">ฉันบวกเลขได้! ลองกดดูนะ! 🎉</div>
+  <h1 id="title-h1">🌈 การผจญภัยการบวก!</h1>
+  <div class="subtitle" id="subtitle">ฉันบวกเลขได้! ลองกดดูนะ! 🎉</div>
 </div>
 
 <div class="top-bar">
   <div class="streak-badge" id="streak-badge">
     <span class="streak-icon">🔥</span>
-    <span class="streak-text">ชนะต่อเนื่อง</span>
+    <span class="streak-text" id="streak-label">ชนะต่อเนื่อง</span>
     <span class="streak-num" id="streak-num">0</span>
-    <span class="streak-text">ครั้ง</span>
+    <span class="streak-text" id="streak-suffix">ครั้ง</span>
   </div>
   <div class="score-badge">
     <span class="score-text" id="score-text">ตอบถูก 0 / 0</span>
@@ -568,13 +591,13 @@
 
 <div class="mascot-area">
   <div class="mascot" id="mascot" title="กดฉันเพื่อเปลี่ยนลุค!">🐱</div>
-  <div class="mascot-tip">กดเพื่อเปลี่ยนตัวละคร 👆</div>
+  <div class="mascot-tip" id="mascot-tip">กดเพื่อเปลี่ยนตัวละคร 👆</div>
 </div>
 
 <div class="speech-bubble" id="speech-bubble">มาคำนวณกันเลย! 🌟</div>
 
 <div class="question-card" id="question-card">
-  <div class="question-label">กรุณาคำนวณโจทย์บวกนี้:</div>
+  <div class="question-label" id="question-label">กรุณาคำนวณโจทย์บวกนี้:</div>
   <div class="question-text" id="question-text">
     <span class="num" id="num1-el">？</span>
     <span class="op"> ＋ </span>
@@ -585,12 +608,132 @@
   <div class="dots-display" id="dots-display"></div>
 </div>
 
-<div class="answers-label">👇 เลือกคำตอบที่ถูกต้อง!</div>
+<div class="answers-label" id="answers-label">👇 เลือกคำตอบที่ถูกต้อง!</div>
 <div class="answer-grid" id="answer-grid"></div>
 
 <button id="next-btn" onclick="nextQuestion()">✨ โจทย์ต่อไป ➡️</button>
 
 <script>
+// ── Language data ──────────────────────────────────────────────
+const langs = {
+  th: {
+    title: '🌈 การผจญภัยการบวก!',
+    subtitle: 'ฉันบวกเลขได้! ลองกดดูนะ! 🎉',
+    streakLabel: 'ชนะต่อเนื่อง',
+    streakSuffix: 'ครั้ง',
+    score: (c, t) => `ตอบถูก ${c} / ${t}`,
+    mascotTitle: 'กดฉันเพื่อเปลี่ยนลุค!',
+    mascotTip: 'กดเพื่อเปลี่ยนตัวละคร 👆',
+    initBubble: 'มาคำนวณกันเลย! 🌟',
+    questionLabel: 'กรุณาคำนวณโจทย์บวกนี้:',
+    answersLabel: '👇 เลือกคำตอบที่ถูกต้อง!',
+    nextBtn: '✨ โจทย์ต่อไป ➡️',
+    streakSuper: (n) => `🔥 ชนะต่อเนื่อง ${n} ครั้ง! ราชาคณิตศาสตร์! 👑`,
+    streakGood:  (n) => `⚡ ชนะต่อเนื่อง ${n} ครั้ง! เก่งมากเลย! 🌟`,
+    ariaAnswer: (n) => `คำตอบ ${n}`,
+    langBtnLabel: '🇹🇼 繁體中文',
+    prompts: [
+      'โจทย์นี้เธอทำได้แน่! 💪',
+      'ค่อยๆ คิดนะ ไม่ต้องรีบ～ 😊',
+      'เธอเป็นอัจฉริยะคณิตศาสตร์! 🌟',
+      'บวกกันแล้วได้เท่าไหร่นะ? 🤔',
+      'ลองนับนิ้วดูก็ได้นะ! 🖐️',
+      'เชื่อมั่นในตัวเอง เธอทำได้! ✨',
+      'มาคำนวณด้วยกันเลย! 🎯',
+    ],
+    correctMsgs: [
+      'ว้าว! ตอบถูกแล้ว! เก่งมากเลย! 🎊',
+      'เก่งมาก! ถูกต้องสมบูรณ์แบบ! 🌟',
+      'เยป! ตอบถูกแล้ว! ฉลาดจริงๆ! 🎉',
+      'สุดยอด! ถูกต้องมาก! สู้ต่อไป! 💫',
+      'ว้าว! เธอเป็นอัจฉริยะคณิตศาสตร์! 🏆',
+      'คำตอบถูกต้อง! เธอเก่งมากเลย! 🎈',
+      'สมบูรณ์แบบ! อัจฉริยะคณิตศาสตร์! ✨',
+    ],
+    wrongMsgs: [
+      'ไม่เป็นไร! ลองใหม่อีกครั้ง! 💪',
+      'สู้ๆ! คิดอีกนิดนะ～ 🌈',
+      'ยังไม่ถูก ลองต่อไปนะ! 😊',
+      'ลองนับนิ้วอีกครั้งสิ! 🖐️',
+      'ใกล้แล้ว! คิดอีกทีนะ! ✨',
+      'ไม่มีปัญหา! ลองคำนวณอีกครั้ง! 🌟',
+    ],
+  },
+  zh: {
+    title: '🌈 加法大冒險！',
+    subtitle: '我會加法！快來試試看！🎉',
+    streakLabel: '連勝',
+    streakSuffix: '次',
+    score: (c, t) => `答對 ${c} / ${t}`,
+    mascotTitle: '點我換造型！',
+    mascotTip: '點我換角色 👆',
+    initBubble: '一起來算算看！🌟',
+    questionLabel: '請計算這道加法題：',
+    answersLabel: '👇 選擇正確答案！',
+    nextBtn: '✨ 下一題 ➡️',
+    streakSuper: (n) => `🔥 連勝 ${n} 次！數學之王！👑`,
+    streakGood:  (n) => `⚡ 連勝 ${n} 次！好厲害！🌟`,
+    ariaAnswer: (n) => `答案 ${n}`,
+    langBtnLabel: '🇹🇭 ภาษาไทย',
+    prompts: [
+      '你一定做得到！💪',
+      '慢慢想，不用急～😊',
+      '你是數學天才！🌟',
+      '兩個數加起來是多少？🤔',
+      '可以用手指數數看！🖐️',
+      '相信自己，你可以的！✨',
+      '一起來計算吧！🎯',
+    ],
+    correctMsgs: [
+      '哇！答對了！好棒喔！🎊',
+      '很棒！完全正確！🌟',
+      '耶！答對了！真聰明！🎉',
+      '太厲害了！繼續加油！💫',
+      '哇！你是數學天才！🏆',
+      '答案正確！你好聰明！🎈',
+      '完美！數學小天才！✨',
+    ],
+    wrongMsgs: [
+      '沒關係！再試一次！💪',
+      '加油！再想想看～🌈',
+      '還不對，繼續試試！😊',
+      '再用手指數一次吧！🖐️',
+      '快對了！再想想！✨',
+      '沒問題！再算一次！🌟',
+    ],
+  },
+};
+
+let currentLang = 'th';
+
+function toggleLang() {
+  currentLang = currentLang === 'th' ? 'zh' : 'th';
+  applyLang();
+  // refresh the speech bubble with new language
+  setBubble(langs[currentLang].initBubble, 'neutral');
+}
+
+function applyLang() {
+  const L = langs[currentLang];
+  document.getElementById('title-h1').textContent     = L.title;
+  document.getElementById('subtitle').textContent      = L.subtitle;
+  document.getElementById('streak-label').textContent  = L.streakLabel;
+  document.getElementById('streak-suffix').textContent = L.streakSuffix;
+  document.getElementById('mascot').title              = L.mascotTitle;
+  document.getElementById('mascot-tip').textContent    = L.mascotTip;
+  document.getElementById('question-label').textContent = L.questionLabel;
+  document.getElementById('answers-label').textContent  = L.answersLabel;
+  document.getElementById('next-btn').textContent       = L.nextBtn;
+  document.getElementById('lang-btn').textContent       = L.langBtnLabel;
+  // update score display
+  document.getElementById('score-text').textContent    = L.score(totalC, totalQ);
+  // update aria-labels on answer buttons
+  document.querySelectorAll('.ans-btn').forEach(b => {
+    b.setAttribute('aria-label', L.ariaAnswer(b.dataset.n));
+  });
+}
+
+// ── Audio ──────────────────────────────────────────────────────
 let actx = null;
 function ctx() {
   if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
@@ -743,13 +886,14 @@ function showDots() {
 function buildButtons() {
   const grid = document.getElementById('answer-grid');
   grid.innerHTML = '';
+  const L = langs[currentLang];
   for (let i = 0; i <= 20; i++) {
     const btn = document.createElement('button');
     btn.className = 'ans-btn';
     btn.dataset.n = i;
     btn.textContent = i;
     btn.id = 'abtn-' + i;
-    btn.setAttribute('aria-label', 'คำตอบ ' + i);
+    btn.setAttribute('aria-label', L.ariaAnswer(i));
     btn.addEventListener('click', () => onAnswer(i, btn));
     grid.appendChild(btn);
   }
@@ -784,7 +928,7 @@ function showQ() {
   });
 
   document.getElementById('next-btn').className = '';
-  setBubble(rnd(prompts), 'neutral');
+  setBubble(rnd(langs[currentLang].prompts), 'neutral');
 }
 
 function onAnswer(chosen, btn) {
@@ -813,22 +957,23 @@ function onAnswer(chosen, btn) {
     m.classList.add('celebrate');
     setTimeout(() => m.classList.remove('celebrate'), 1900);
 
+    const L = langs[currentLang];
     if (streak >= 5 && streak % 5 === 0) {
       sfxStreak();
       launchConfetti(50);
-      setBubble(`🔥 ชนะต่อเนื่อง ${streak} ครั้ง! ราชาคณิตศาสตร์! 👑`, 'super');
+      setBubble(L.streakSuper(streak), 'super');
       showBadge('🏆');
       spawnStars(12);
     } else if (streak >= 3 && streak % 3 === 0) {
       sfxStreak();
       launchConfetti(32);
-      setBubble(`⚡ ชนะต่อเนื่อง ${streak} ครั้ง! เก่งมากเลย! 🌟`, 'correct');
+      setBubble(L.streakGood(streak), 'correct');
       showBadge('🎊');
       spawnStars(8);
     } else {
       sfxCorrect();
       launchConfetti(18);
-      setBubble(rnd(correctMsgs), 'correct');
+      setBubble(rnd(L.correctMsgs), 'correct');
       showBadge('✅');
       spawnStars(5);
     }
@@ -851,14 +996,15 @@ function onAnswer(chosen, btn) {
     setTimeout(() => m.classList.remove('shake'), 520);
 
     sfxWrong();
-    setBubble(rnd(wrongMsgs), 'wrong');
+    setBubble(rnd(langs[currentLang].wrongMsgs), 'wrong');
     showBadge('❌');
   }
 }
 
 function updateUI() {
-  document.getElementById('streak-num').textContent = streak;
-  document.getElementById('score-text').textContent = `ตอบถูก ${totalC} / ${totalQ}`;
+  const L = langs[currentLang];
+  document.getElementById('streak-num').textContent  = streak;
+  document.getElementById('score-text').textContent  = L.score(totalC, totalQ);
   const badge = document.getElementById('streak-badge');
   badge.classList.remove('bump');
   void badge.offsetWidth;
@@ -947,33 +1093,6 @@ function nextQuestion() {
   genQ();
   showQ();
 }
-
-const prompts = [
-  'โจทย์นี้เธอทำได้แน่! 💪',
-  'ค่อยๆ คิดนะ ไม่ต้องรีบ～ 😊',
-  'เธอเป็นอัจฉริยะคณิตศาสตร์! 🌟',
-  'บวกกันแล้วได้เท่าไหร่นะ? 🤔',
-  'ลองนับนิ้วดูก็ได้นะ! 🖐️',
-  'เชื่อมั่นในตัวเอง เธอทำได้! ✨',
-  'มาคำนวณด้วยกันเลย! 🎯',
-];
-const correctMsgs = [
-  'ว้าว! ตอบถูกแล้ว! เก่งมากเลย! 🎊',
-  'เก่งมาก! ถูกต้องสมบูรณ์แบบ! 🌟',
-  'เยป! ตอบถูกแล้ว! ฉลาดจริงๆ! 🎉',
-  'สุดยอด! ถูกต้องมาก! สู้ต่อไป! 💫',
-  'ว้าว! เธอเป็นอัจฉริยะคณิตศาสตร์! 🏆',
-  'คำตอบถูกต้อง! เธอเก่งมากเลย! 🎈',
-  'สมบูรณ์แบบ! อัจฉริยะคณิตศาสตร์! ✨',
-];
-const wrongMsgs = [
-  'ไม่เป็นไร! ลองใหม่อีกครั้ง! 💪',
-  'สู้ๆ! คิดอีกนิดนะ～ 🌈',
-  'ยังไม่ถูก ลองต่อไปนะ! 😊',
-  'ลองนับนิ้วอีกครั้งสิ! 🖐️',
-  'ใกล้แล้ว! คิดอีกทีนะ! ✨',
-  'ไม่มีปัญหา! ลองคำนวณอีกครั้ง! 🌟',
-];
 
 function rnd(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
