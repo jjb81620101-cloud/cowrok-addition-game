@@ -6,179 +6,246 @@
 <title>🇹🇭 泰文聽力練習</title>
 <script src="https://code.responsivevoice.org/responsivevoice.js?key=FREE"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --pink: #FF6B9D; --purple: #9B59B6; --blue: #3D5AF1;
-    --green: #00C853; --gold: #FFD700;
-  }
-  body {
-    font-family: 'Microsoft JhengHei','微軟正黑體','PingFang TC',sans-serif;
-    background: linear-gradient(160deg,#FFF0F5 0%,#E8F4FF 40%,#F5FFF0 100%);
-    min-height: 100vh;
-    display: flex; flex-direction: column; align-items: center;
-    padding: 20px 12px 40px;
-  }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --pink:#FF6B9D; --purple:#9B59B6; --blue:#3D5AF1; --green:#00C853; --gold:#FFD700; }
+body {
+  font-family:'Microsoft JhengHei','微軟正黑體','PingFang TC',sans-serif;
+  background:linear-gradient(160deg,#FFF0F5 0%,#E8F4FF 40%,#F5FFF0 100%);
+  min-height:100vh; display:flex; flex-direction:column; align-items:center;
+  padding:16px 12px 40px;
+}
 
-  /* ── Lang toggle ── */
-  #lang-btn {
-    position: fixed; top: 12px; right: 12px; z-index: 100;
-    background: #fff; border: 2px solid #ddd; border-radius: 50px;
-    padding: 6px 14px; font-size: 0.82rem; font-weight: 700;
-    cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    font-family: inherit; color: #444;
-  }
+/* ── Lang btn ── */
+#lang-btn {
+  position:fixed; top:12px; right:12px; z-index:100;
+  background:#fff; border:2px solid #ddd; border-radius:50px;
+  padding:6px 14px; font-size:0.82rem; font-weight:700;
+  cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.1);
+  font-family:inherit; color:#444;
+}
 
-  /* ── Header ── */
-  .title-area { text-align: center; margin-bottom: 20px; }
-  .title-area h1 {
-    font-size: clamp(1.6rem,5vw,2.4rem); font-weight: 900;
-    color: var(--pink); text-shadow: 3px 3px 0 #FFB3D1;
-    animation: wiggle 3s ease-in-out infinite;
-  }
-  @keyframes wiggle { 0%,100%{transform:rotate(-1deg)} 50%{transform:rotate(1deg)} }
-  .subtitle { font-size: 0.9rem; color: var(--purple); font-weight: 700; margin-top: 4px; }
+/* ── Header ── */
+.title-area { text-align:center; margin-bottom:12px; }
+.title-area h1 {
+  font-size:clamp(1.5rem,5vw,2.2rem); font-weight:900;
+  color:var(--pink); text-shadow:3px 3px 0 #FFB3D1;
+  animation:wiggle 3s ease-in-out infinite;
+}
+@keyframes wiggle { 0%,100%{transform:rotate(-1deg)} 50%{transform:rotate(1deg)} }
+.subtitle { font-size:0.9rem; color:var(--purple); font-weight:700; margin-top:4px; min-height:22px; }
 
-  /* ── Score bar ── */
-  .top-bar {
-    display: flex; gap: 10px; margin-bottom: 24px;
-    flex-wrap: wrap; justify-content: center;
-  }
-  .streak-badge {
-    display: flex; align-items: center; gap: 6px;
-    background: linear-gradient(135deg,#FFD700,#FF8C00);
-    border-radius: 50px; padding: 8px 18px;
-    box-shadow: 0 4px 14px rgba(255,165,0,0.4);
-    border: 3px solid rgba(255,255,255,0.6);
-  }
-  .streak-badge.bump { animation: bump 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
-  @keyframes bump { 0%,100%{transform:scale(1)} 50%{transform:scale(1.18) rotate(-3deg)} }
-  .s-icon { font-size: 1.4rem; }
-  .s-label,.s-suffix { font-size: 0.9rem; font-weight: 900; color:#fff; text-shadow:1px 1px 2px rgba(0,0,0,0.25); }
-  .s-num { font-size: 1.8rem; font-weight: 900; color:#fff; min-width:36px; text-align:center; }
-  .score-badge {
-    display: flex; align-items: center;
-    background: linear-gradient(135deg,#A78BFA,#7C3AED);
-    border-radius: 50px; padding: 8px 18px;
-    box-shadow: 0 4px 14px rgba(124,58,237,0.35);
-    border: 3px solid rgba(255,255,255,0.5);
-  }
-  .score-text { font-size: 0.95rem; font-weight: 900; color:#fff; }
+/* ── Mode tabs ── */
+.mode-tabs { display:flex; gap:8px; margin-bottom:14px; }
+.mode-tab {
+  border:none; border-radius:50px; padding:9px 22px;
+  font-size:0.9rem; font-weight:700; cursor:pointer;
+  font-family:inherit; transition:all 0.2s;
+  background:rgba(255,255,255,0.7); color:#888; border:2px solid #e0e0e0;
+}
+.mode-tab.active { background:linear-gradient(135deg,var(--purple),#5B2C8D); color:#fff; border-color:transparent; box-shadow:0 4px 14px rgba(155,89,182,0.35); }
 
-  /* ── Speaker Card ── */
-  .speaker-card {
-    background: #fff; border-radius: 28px;
-    padding: 32px 40px 28px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-    border: 4px solid #E8D5FF;
-    margin-bottom: 24px; text-align: center;
-    width: 100%; max-width: 380px;
-    animation: slideIn 0.38s cubic-bezier(0.175,0.885,0.32,1.275);
-  }
-  @keyframes slideIn { 0%{transform:translateY(-18px) scale(0.95);opacity:0} 100%{transform:none;opacity:1} }
+/* ── Score bar ── */
+.top-bar { display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap; justify-content:center; }
+.streak-badge {
+  display:flex; align-items:center; gap:6px;
+  background:linear-gradient(135deg,#FFD700,#FF8C00);
+  border-radius:50px; padding:8px 16px;
+  box-shadow:0 4px 14px rgba(255,165,0,0.4); border:3px solid rgba(255,255,255,0.6);
+}
+.streak-badge.bump { animation:bump 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
+@keyframes bump { 0%,100%{transform:scale(1)} 50%{transform:scale(1.18) rotate(-3deg)} }
+.s-icon { font-size:1.3rem; }
+.s-label,.s-suffix { font-size:0.85rem; font-weight:900; color:#fff; text-shadow:1px 1px 2px rgba(0,0,0,0.25); }
+.s-num { font-size:1.7rem; font-weight:900; color:#fff; min-width:32px; text-align:center; }
+.score-badge {
+  display:flex; align-items:center;
+  background:linear-gradient(135deg,#A78BFA,#7C3AED);
+  border-radius:50px; padding:8px 16px;
+  box-shadow:0 4px 14px rgba(124,58,237,0.35); border:3px solid rgba(255,255,255,0.5);
+}
+.score-text { font-size:0.9rem; font-weight:900; color:#fff; }
 
-  .q-label { font-size: 0.82rem; color: #bbb; font-weight: 700; margin-bottom: 18px; letter-spacing: 1px; }
+/* ═══════════════════════════════
+   QUIZ MODE
+═══════════════════════════════ */
+#quiz-mode { width:100%; display:flex; flex-direction:column; align-items:center; }
 
-  .speaker-btn {
-    width: 110px; height: 110px; border-radius: 50%;
-    background: linear-gradient(135deg,#A78BFA,#7C3AED);
-    border: none; cursor: pointer; font-size: 3.5rem;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 16px;
-    box-shadow: 0 8px 24px rgba(124,58,237,0.4), 0 0 0 0 rgba(124,58,237,0.3);
-    transition: transform 0.15s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .speaker-btn:active { transform: scale(0.92); }
-  .speaker-btn.playing {
-    animation: speakPulse 0.7s ease infinite alternate, ripple 1s ease infinite;
-  }
-  @keyframes speakPulse { from{transform:scale(1)} to{transform:scale(1.1)} }
-  @keyframes ripple {
-    0%   { box-shadow: 0 8px 24px rgba(124,58,237,0.4), 0 0 0 0   rgba(124,58,237,0.4); }
-    100% { box-shadow: 0 8px 24px rgba(124,58,237,0.4), 0 0 0 28px rgba(124,58,237,0); }
-  }
-  .replay-label { font-size: 0.82rem; color: #aaa; font-weight: 700; }
+.speaker-card {
+  background:#fff; border-radius:28px; padding:28px 36px 22px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.1); border:4px solid #E8D5FF;
+  margin-bottom:20px; text-align:center; width:100%; max-width:360px;
+}
+.q-label { font-size:0.82rem; color:#bbb; font-weight:700; margin-bottom:14px; letter-spacing:1px; }
+.speaker-btn {
+  width:100px; height:100px; border-radius:50%;
+  background:linear-gradient(135deg,#A78BFA,#7C3AED);
+  border:none; cursor:pointer; font-size:3.2rem;
+  display:flex; align-items:center; justify-content:center; margin:0 auto 12px;
+  box-shadow:0 8px 24px rgba(124,58,237,0.4), 0 0 0 0 rgba(124,58,237,0.3);
+  transition:transform 0.15s; -webkit-tap-highlight-color:transparent;
+}
+.speaker-btn:active { transform:scale(0.92); }
+.speaker-btn.playing { animation:speakPulse 0.7s ease infinite alternate, ripple 1s ease infinite; }
+@keyframes speakPulse { from{transform:scale(1)} to{transform:scale(1.1)} }
+@keyframes ripple {
+  0%   { box-shadow:0 8px 24px rgba(124,58,237,0.4), 0 0 0 0   rgba(124,58,237,0.4); }
+  100% { box-shadow:0 8px 24px rgba(124,58,237,0.4), 0 0 0 28px rgba(124,58,237,0); }
+}
+.replay-label { font-size:0.8rem; color:#aaa; font-weight:700; }
 
-  /* ── Answer Grid ── */
-  .answers-label { font-size: 0.9rem; color: #888; font-weight: 700; margin-bottom: 10px; text-align: center; }
-  .ans-grid {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 12px; max-width: 380px; width: 100%; margin-bottom: 20px;
-  }
-  .ans-btn {
-    border: none; border-radius: 18px; padding: 18px 10px;
-    font-size: clamp(2rem,7vw,2.8rem); font-weight: 900;
-    cursor: pointer; font-family: inherit; color: #fff;
-    box-shadow: 0 6px 0 rgba(0,0,0,0.2);
-    transition: transform 0.12s, box-shadow 0.12s, opacity 0.2s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .ans-btn:not(:disabled):hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 9px 0 rgba(0,0,0,0.2); }
-  .ans-btn:not(:disabled):active { transform: scale(0.93); box-shadow: 0 1px 0 rgba(0,0,0,0.15); }
-  .ans-btn:nth-child(1) { background: linear-gradient(135deg,#FF6B9D,#FF4757); }
-  .ans-btn:nth-child(2) { background: linear-gradient(135deg,#3D5AF1,#1A3AE0); }
-  .ans-btn:nth-child(3) { background: linear-gradient(135deg,#FF8C00,#E65100); }
-  .ans-btn:nth-child(4) { background: linear-gradient(135deg,#00C853,#1B5E20); }
-  .ans-btn.correct { background: linear-gradient(135deg,#00E676,#00C853) !important; animation: btnOK 0.45s cubic-bezier(0.175,0.885,0.32,1.275); }
-  @keyframes btnOK { 0%,100%{transform:scale(1)} 50%{transform:scale(1.25) rotate(-4deg)} }
-  .ans-btn.wrong { background: linear-gradient(135deg,#FF5252,#B71C1C) !important; animation: btnNG 0.4s ease; }
-  @keyframes btnNG { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+.ans-label { font-size:0.9rem; color:#888; font-weight:700; margin-bottom:10px; text-align:center; }
+.ans-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; max-width:360px; width:100%; margin-bottom:16px; }
+.ans-btn {
+  border:none; border-radius:18px; padding:16px 8px;
+  font-size:clamp(1.8rem,7vw,2.6rem); font-weight:900;
+  cursor:pointer; font-family:inherit; color:#fff;
+  box-shadow:0 6px 0 rgba(0,0,0,0.2);
+  transition:transform 0.12s, box-shadow 0.12s, opacity 0.2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.ans-btn:not(:disabled):hover { transform:translateY(-3px) scale(1.05); box-shadow:0 9px 0 rgba(0,0,0,0.2); }
+.ans-btn:not(:disabled):active { transform:scale(0.93); box-shadow:0 1px 0 rgba(0,0,0,0.15); }
+.ans-btn:nth-child(1) { background:linear-gradient(135deg,#FF6B9D,#FF4757); }
+.ans-btn:nth-child(2) { background:linear-gradient(135deg,#3D5AF1,#1A3AE0); }
+.ans-btn:nth-child(3) { background:linear-gradient(135deg,#FF8C00,#E65100); }
+.ans-btn:nth-child(4) { background:linear-gradient(135deg,#00C853,#1B5E20); }
+.ans-btn.correct { background:linear-gradient(135deg,#00E676,#00C853) !important; animation:btnOK 0.45s cubic-bezier(0.175,0.885,0.32,1.275); }
+@keyframes btnOK { 0%,100%{transform:scale(1)} 50%{transform:scale(1.25) rotate(-4deg)} }
+.ans-btn.wrong { background:linear-gradient(135deg,#FF5252,#B71C1C) !important; animation:btnNG 0.4s ease; }
+@keyframes btnNG { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
 
-  /* ── Reveal label ── */
-  .reveal-label {
-    font-size: 0.9rem; color: #888; text-align: center;
-    margin-bottom: 12px; min-height: 22px; font-weight: 600;
-  }
-  .reveal-label span { color: var(--purple); font-weight: 900; font-size: 1.1rem; }
+.reveal-label { font-size:0.9rem; color:#888; text-align:center; margin-bottom:10px; min-height:22px; font-weight:600; }
+.reveal-label span { color:var(--purple); font-weight:900; font-size:1.1rem; }
 
-  /* ── Next btn ── */
-  #next-btn {
-    display: none; background: linear-gradient(135deg,#FF6B9D,#FF4757);
-    color: #fff; border: none; border-radius: 50px;
-    padding: 14px 44px; font-size: clamp(1rem,3vw,1.3rem);
-    font-weight: 900; cursor: pointer; font-family: inherit;
-    box-shadow: 0 6px 0 #B71C55, 0 10px 24px rgba(255,71,87,0.35);
-    margin-bottom: 16px; letter-spacing: 2px;
-    transition: transform 0.15s;
-  }
-  #next-btn.vis { display: inline-block; animation: nextIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
-  @keyframes nextIn { 0%{transform:scale(0) rotate(-10deg);opacity:0} 100%{transform:scale(1);opacity:1} }
-  #next-btn:hover { transform: translateY(-3px) scale(1.05); }
+#q-next-btn {
+  display:none; background:linear-gradient(135deg,#FF6B9D,#FF4757);
+  color:#fff; border:none; border-radius:50px;
+  padding:13px 40px; font-size:1.1rem;
+  font-weight:900; cursor:pointer; font-family:inherit;
+  box-shadow:0 6px 0 #B71C55, 0 10px 24px rgba(255,71,87,0.35);
+  margin-bottom:14px; letter-spacing:2px; transition:transform 0.15s;
+}
+#q-next-btn.vis { display:inline-block; animation:nextIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
+@keyframes nextIn { 0%{transform:scale(0) rotate(-10deg);opacity:0} 100%{transform:scale(1);opacity:1} }
+#q-next-btn:hover { transform:translateY(-3px) scale(1.05); }
 
-  /* ── Hint panel ── */
-  .hint-box {
-    max-width: 380px; width: 100%;
-    background: #fff; border-radius: 18px;
-    padding: 14px 18px; margin-bottom: 14px;
-    box-shadow: 0 3px 14px rgba(0,0,0,0.07);
-    border-left: 5px solid var(--purple);
-    display: none;
-  }
-  .hint-box.show { display: block; animation: fadeIn 0.3s ease; }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
-  .hint-title { font-size: 0.78rem; color: var(--purple); font-weight: 700; margin-bottom: 6px; }
-  .hint-row { font-size: 1rem; color: #555; line-height: 2; }
-  .hint-row b { font-size: 1.4rem; color: var(--blue); }
+.hint-box {
+  max-width:360px; width:100%; background:#fff; border-radius:18px;
+  padding:14px 18px; margin-bottom:14px;
+  box-shadow:0 3px 14px rgba(0,0,0,0.07); border-left:5px solid var(--purple); display:none;
+}
+.hint-box.show { display:block; animation:fadeIn 0.3s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+.hint-title { font-size:0.78rem; color:var(--purple); font-weight:700; margin-bottom:6px; }
+.hint-row { font-size:1rem; color:#555; line-height:2; }
+.hint-row b { font-size:1.4rem; color:var(--blue); }
 
-  /* ── Confetti ── */
-  #cf-layer { position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;overflow:hidden; }
-  .cf { position:absolute;top:-30px;font-size:1.3rem;animation:cfFall linear forwards; }
-  @keyframes cfFall { 0%{opacity:1;transform:translateY(0) rotate(0)} 80%{opacity:1} 100%{opacity:0;transform:translateY(110vh) rotate(720deg) scale(0.4)} }
-  #big-badge { position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:7rem;pointer-events:none;z-index:9998;transition:transform 0.22s cubic-bezier(0.175,0.885,0.32,1.275); }
-  #big-badge.show { transform:translate(-50%,-50%) scale(1); }
-  #big-badge.hide { transform:translate(-50%,-50%) scale(0);transition:transform 0.16s ease-in; }
+/* ═══════════════════════════════
+   MATCH MODE (連連看)
+═══════════════════════════════ */
+#match-mode { width:100%; max-width:420px; display:none; flex-direction:column; align-items:center; }
 
-  @media(max-width:380px) {
-    .ans-btn { font-size: 1.8rem; padding: 14px 6px; }
-    .speaker-btn { width: 90px; height: 90px; font-size: 2.8rem; }
-  }
+.match-audio-bar {
+  display:flex; align-items:center; gap:12px; margin-bottom:16px;
+  background:#fff; border-radius:20px; padding:12px 20px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.08); border:2px solid #E8D5FF;
+  width:100%;
+}
+.match-audio-bar .speaker-btn { width:56px; height:56px; font-size:1.8rem; margin:0; flex-shrink:0; }
+.match-audio-bar .speaker-btn.playing { animation:speakPulse 0.7s ease infinite alternate; box-shadow:0 4px 16px rgba(124,58,237,0.5); }
+.match-audio-info { flex:1; }
+.match-audio-label { font-size:0.75rem; color:#aaa; font-weight:700; }
+.match-audio-syllable { font-size:1.6rem; font-weight:900; color:var(--purple); min-height:36px; }
+
+.match-progress { font-size:0.85rem; color:#888; font-weight:700; margin-bottom:14px; }
+.match-progress span { color:var(--green); font-size:1rem; font-weight:900; }
+
+/* The matching arena */
+.match-arena {
+  position:relative; width:100%; padding:0;
+}
+.tile-row {
+  display:flex; justify-content:space-around; align-items:center;
+  padding:4px 0; gap:8px;
+}
+.tile {
+  flex:1; max-width:88px; min-height:76px;
+  background:#fff; border-radius:18px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font-size:2rem; font-weight:900; color:var(--blue);
+  box-shadow:0 5px 16px rgba(0,0,0,0.1); border:3px solid #e8e8e8;
+  cursor:pointer; transition:all 0.18s; user-select:none;
+  -webkit-tap-highlight-color:transparent; position:relative; z-index:2;
+}
+.tile:active { transform:scale(0.92); }
+.tile.vow-tile { border-top:4px solid var(--purple); }
+.tile.con-tile { border-bottom:4px solid var(--blue); }
+.tile.selected {
+  border-color:var(--gold) !important;
+  box-shadow:0 0 0 3px var(--gold), 0 8px 20px rgba(255,215,0,0.4);
+  transform:scale(1.08);
+}
+.tile.matched {
+  border-color:var(--green) !important;
+  background:linear-gradient(135deg,#E8FFF0,#C8FFE0);
+  opacity:0.8; cursor:default; transform:none;
+}
+.tile.wrong-flash { animation:tileNG 0.4s ease; }
+@keyframes tileNG { 0%,100%{border-color:#FF5252 !important; transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+.tile-sub { font-size:0.65rem; color:#aaa; font-weight:700; margin-top:2px; }
+.tile .speak-icon { font-size:0.9rem; position:absolute; top:4px; right:6px; opacity:0.5; }
+
+/* SVG lines between rows */
+.match-svg-layer {
+  position:absolute; top:0; left:0; width:100%; height:100%;
+  pointer-events:none; z-index:1; overflow:visible;
+}
+
+.spacer-row { height:80px; } /* SVG draws through this gap */
+
+/* Between-row spacer with label */
+.match-divider {
+  display:flex; align-items:center; gap:10px;
+  margin:8px 0; color:#ccc; font-size:0.8rem; font-weight:700;
+}
+.match-divider::before,.match-divider::after { content:''; flex:1; height:1px; background:#e0e0e0; }
+
+/* Round complete */
+.match-complete {
+  display:none; text-align:center; padding:24px;
+  background:#fff; border-radius:24px; box-shadow:0 8px 32px rgba(0,0,0,0.1);
+  border:4px solid var(--green); width:100%; margin-top:8px;
+}
+.match-complete.show { display:block; animation:fadeIn 0.4s ease; }
+.match-complete-icon { font-size:4rem; margin-bottom:8px; }
+.match-complete-msg { font-size:1.3rem; font-weight:900; color:var(--green); margin-bottom:6px; }
+.match-complete-detail { font-size:0.9rem; color:#888; margin-bottom:20px; }
+.btn-next-round {
+  background:linear-gradient(135deg,#00C853,#1B5E20);
+  color:#fff; border:none; border-radius:50px; padding:13px 36px;
+  font-size:1.1rem; font-weight:900; cursor:pointer; font-family:inherit;
+  box-shadow:0 6px 0 #1B5E20; transition:transform 0.15s;
+}
+.btn-next-round:hover { transform:translateY(-2px) scale(1.05); }
+
+/* ── Confetti & Badge ── */
+#cf-layer { position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;overflow:hidden; }
+.cf { position:absolute;top:-30px;font-size:1.3rem;animation:cfFall linear forwards; }
+@keyframes cfFall { 0%{opacity:1;transform:translateY(0) rotate(0)} 80%{opacity:1} 100%{opacity:0;transform:translateY(110vh) rotate(720deg) scale(0.4)} }
+#big-badge { position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:7rem;pointer-events:none;z-index:9998;transition:transform 0.22s cubic-bezier(0.175,0.885,0.32,1.275); }
+#big-badge.show { transform:translate(-50%,-50%) scale(1); }
+#big-badge.hide { transform:translate(-50%,-50%) scale(0);transition:transform 0.16s ease-in; }
+
+@media(max-width:380px) {
+  .tile { font-size:1.6rem; min-height:64px; max-width:72px; }
+  .ans-btn { font-size:1.6rem; padding:13px 5px; }
+}
 </style>
 </head>
 <body>
 
 <div id="cf-layer"></div>
 <div id="big-badge"></div>
-
 <button id="lang-btn" onclick="toggleLang()">🇹🇭 ภาษาไทย</button>
 
 <div class="title-area">
@@ -186,6 +253,13 @@
   <div class="subtitle" id="subtitle">聽聲音，選正確的泰文字！</div>
 </div>
 
+<!-- Mode tabs -->
+<div class="mode-tabs">
+  <button class="mode-tab active" id="tab-quiz" onclick="setMode('quiz')" id="tab-quiz-label">🎯 選擇題</button>
+  <button class="mode-tab" id="tab-match" onclick="setMode('match')" id="tab-match-label">🔗 連連看</button>
+</div>
+
+<!-- Score bar -->
 <div class="top-bar">
   <div class="streak-badge" id="streak-badge">
     <span class="s-icon">🏅</span>
@@ -198,99 +272,118 @@
   </div>
 </div>
 
-<div class="speaker-card" id="speaker-card">
-  <div class="q-label" id="q-label">聽聲音，選正確的泰文音節</div>
-  <button class="speaker-btn" id="speaker-btn" onclick="speakSyllable()">🔊</button>
-  <div class="replay-label" id="replay-label">點擊重播</div>
+<!-- ─── QUIZ MODE ─── -->
+<div id="quiz-mode">
+  <div class="speaker-card">
+    <div class="q-label" id="q-label">聽聲音，選正確的泰文音節</div>
+    <button class="speaker-btn" id="q-speaker-btn" onclick="speakSyllable()">🔊</button>
+    <div class="replay-label" id="replay-label">點擊重播</div>
+  </div>
+  <div class="ans-label" id="ans-label">👇 選擇正確的泰文字</div>
+  <div class="ans-grid" id="ans-grid"></div>
+  <div class="reveal-label" id="reveal-label"></div>
+  <button id="q-next-btn" onclick="quizNextQ()">✨ 下一題 ➡️</button>
+  <div class="hint-box" id="hint-box">
+    <div class="hint-title" id="hint-title">💡 提示</div>
+    <div class="hint-row" id="hint-content"></div>
+  </div>
 </div>
 
-<div class="answers-label" id="answers-label">👇 選擇正確的泰文字</div>
-<div class="ans-grid" id="ans-grid"></div>
+<!-- ─── MATCH MODE ─── -->
+<div id="match-mode">
+  <!-- Audio bar -->
+  <div class="match-audio-bar">
+    <button class="speaker-btn" id="m-speaker-btn" onclick="replayMatchAudio()">🔊</button>
+    <div class="match-audio-info">
+      <div class="match-audio-label" id="m-audio-label">點擊喇叭聽聲音</div>
+      <div class="match-audio-syllable" id="m-audio-syllable">???</div>
+    </div>
+  </div>
 
-<div class="reveal-label" id="reveal-label"></div>
+  <div class="match-progress" id="match-progress">配對 <span id="m-matched">0</span> / 4</div>
 
-<button id="next-btn" onclick="nextQ()">✨ 下一題 ➡️</button>
+  <!-- Arena -->
+  <div class="match-arena" id="match-arena">
+    <svg class="match-svg-layer" id="match-svg"></svg>
+    <!-- Vowel row (top) -->
+    <div class="tile-row" id="vow-row"></div>
+    <div class="match-divider" id="match-divider">拉線配對</div>
+    <!-- Consonant row (bottom) -->
+    <div class="tile-row" id="con-row"></div>
+  </div>
 
-<div class="hint-box" id="hint-box">
-  <div class="hint-title" id="hint-title">💡 提示</div>
-  <div class="hint-row" id="hint-content"></div>
+  <!-- Round complete -->
+  <div class="match-complete" id="match-complete">
+    <div class="match-complete-icon">🎊</div>
+    <div class="match-complete-msg" id="m-complete-msg">全部配對完成！</div>
+    <div class="match-complete-detail" id="m-complete-detail">太厲害了！繼續下一關</div>
+    <button class="btn-next-round" onclick="initMatchRound()">🔄 下一關</button>
+  </div>
 </div>
 
 <script>
-// ── Speech ──────────────────────────────────────────────────
-function speakThai(text, rate) {
-  const btn = document.getElementById('speaker-btn');
-  btn.classList.add('playing');
-  const done = () => btn.classList.remove('playing');
+// ══════════════════════════════════════════
+//  SPEECH
+// ══════════════════════════════════════════
+function speakThai(text, btnId, rate) {
+  const btn = document.getElementById(btnId || 'q-speaker-btn');
+  if (btn) btn.classList.add('playing');
+  const done = () => { if (btn) btn.classList.remove('playing'); };
 
-  // Try ResponsiveVoice first (natural Google TTS voice)
   if (window.responsiveVoice && responsiveVoice.voiceSupport()) {
     responsiveVoice.cancel();
-    responsiveVoice.speak(text, 'Thai Female', {
-      rate: rate || 0.85,
-      pitch: 1,
-      volume: 1,
-      onend: done,
-      onerror: () => { done(); fallbackSpeak(text, rate); }
-    });
-  } else {
-    fallbackSpeak(text, rate);
+    responsiveVoice.speak(text, 'Thai Female', { rate: rate || 0.85, pitch: 1, volume: 1, onend: done, onerror: done });
+  } else if (window.speechSynthesis) {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'th-TH'; u.rate = rate || 0.85;
+    u.onend = done; u.onerror = done;
+    speechSynthesis.speak(u);
   }
 }
+function speakSyllable() { speakThai(qCurVow[0](qCurCon[0]), 'q-speaker-btn'); }
 
-function fallbackSpeak(text, rate) {
-  if (!window.speechSynthesis) return;
-  speechSynthesis.cancel();
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = 'th-TH';
-  utter.rate = rate || 0.85;
-  const btn = document.getElementById('speaker-btn');
-  utter.onend = () => btn.classList.remove('playing');
-  utter.onerror = () => btn.classList.remove('playing');
-  speechSynthesis.speak(utter);
-}
-
-function speakSyllable() { speakThai(curVow[0](curCon[0])); }
-
-// ── Language ──────────────────────────────────────────────────
+// ══════════════════════════════════════════
+//  LANGUAGE
+// ══════════════════════════════════════════
 const L = {
   zh: {
-    title: '🇹🇭 泰文聽力練習',
-    subtitle: '聽聲音，選正確的泰文字！',
-    streakLabel: '連勝', streakSuffix: '次',
-    score: (c,t) => `答對 ${c} / ${t}`,
-    qLabel: '聽聲音，選正確的泰文音節',
-    ansLabel: '👇 選擇正確的泰文字',
-    replayLabel: '點擊重播',
-    nextBtn: '✨ 下一題 ➡️',
-    hintTitle: '💡 提示',
-    langBtn: '🇹🇭 ภาษาไทย',
-    revealCorrect: s => `✅ 正確答案是：<span>${s}</span>`,
-    correct: ['答對了！🎉','完全正確！✨','太棒了！🌟','好厲害！🏆','完美！🎊','繼續加油！💪'],
-    wrong:   ['再試試看！💪','很接近了！😊','不對喔，繼續！🌈','加油！再想想！✨'],
-    streakSuper: n => `🔥 連勝 ${n} 次！泰文達人！👑`,
-    streakGood:  n => `⚡ 連勝 ${n} 次！好厲害！🌟`,
+    title:'🇹🇭 泰文聽力練習', subtitle:'聽聲音，選正確的泰文字！',
+    streakLabel:'連勝', streakSuffix:'次',
+    score:(c,t)=>`答對 ${c} / ${t}`,
+    qLabel:'聽聲音，選正確的泰文音節', ansLabel:'👇 選擇正確的泰文字',
+    replayLabel:'點擊重播', nextBtn:'✨ 下一題 ➡️', hintTitle:'💡 提示',
+    tabQuiz:'🎯 選擇題', tabMatch:'🔗 連連看',
+    mAudioLabel:'點擊喇叭聽聲音', mProgress:(m,t)=>`配對 ${m} / ${t}`,
+    mDivider:'拉線配對', mCompleteMsg:'全部配對完成！', mCompleteDetail:'太厲害了！繼續下一關',
+    mNextRound:'🔄 下一關',
+    langBtn:'🇹🇭 ภาษาไทย',
+    revealCorrect: s=>`✅ 正確答案：<span>${s}</span>`,
+    correct:['答對了！🎉','完全正確！✨','太棒了！🌟','好厲害！🏆','完美！🎊'],
+    wrong:['再試試！💪','很接近了！😊','不對喔繼續！🌈','加油！✨'],
+    streakSuper: n=>`🔥 連勝 ${n} 次！泰文達人！👑`,
+    streakGood:  n=>`⚡ 連勝 ${n} 次！好厲害！🌟`,
   },
   th: {
-    title: '🇹🇭 ฝึกฟังภาษาไทย',
-    subtitle: 'ฟังเสียง แล้วเลือกพยางค์ที่ถูกต้อง!',
-    streakLabel: 'ต่อเนื่อง', streakSuffix: 'ครั้ง',
-    score: (c,t) => `ถูก ${c} / ${t}`,
-    qLabel: 'ฟังเสียง แล้วเลือกพยางค์',
-    ansLabel: '👇 เลือกพยางค์ภาษาไทย',
-    replayLabel: 'แตะเพื่อเล่นซ้ำ',
-    nextBtn: '✨ ต่อไป ➡️',
-    hintTitle: '💡 คำใบ้',
-    langBtn: '🇹🇼 繁體中文',
-    revealCorrect: s => `✅ คำตอบที่ถูกต้องคือ：<span>${s}</span>`,
-    correct: ['ถูกต้อง! 🎉','เก่งมาก! ✨','ยอดเยี่ยม! 🌟','เก่งจริงๆ! 🏆'],
-    wrong:   ['ลองใหม่! 💪','ใกล้แล้ว! 😊','ยังไม่ถูก ลองต่อ! 🌈'],
-    streakSuper: n => `🔥 ต่อเนื่อง ${n} ครั้ง! เก่งมาก! 👑`,
-    streakGood:  n => `⚡ ต่อเนื่อง ${n} ครั้ง! 🌟`,
+    title:'🇹🇭 ฝึกฟังภาษาไทย', subtitle:'ฟังเสียง แล้วเลือกพยางค์!',
+    streakLabel:'ต่อเนื่อง', streakSuffix:'ครั้ง',
+    score:(c,t)=>`ถูก ${c} / ${t}`,
+    qLabel:'ฟังเสียง แล้วเลือกพยางค์', ansLabel:'👇 เลือกพยางค์ภาษาไทย',
+    replayLabel:'แตะเพื่อเล่นซ้ำ', nextBtn:'✨ ต่อไป ➡️', hintTitle:'💡 คำใบ้',
+    tabQuiz:'🎯 เลือกตอบ', tabMatch:'🔗 จับคู่',
+    mAudioLabel:'แตะลำโพงเพื่อฟัง', mProgress:(m,t)=>`จับคู่ ${m} / ${t}`,
+    mDivider:'ลากเส้นจับคู่', mCompleteMsg:'จับคู่ครบแล้ว！', mCompleteDetail:'เก่งมาก！ไปต่อ',
+    mNextRound:'🔄 รอบต่อไป',
+    langBtn:'🇹🇼 繁體中文',
+    revealCorrect: s=>`✅ คำตอบ：<span>${s}</span>`,
+    correct:['ถูกต้อง! 🎉','เก่งมาก! ✨','ยอดเยี่ยม! 🌟'],
+    wrong:['ลองใหม่! 💪','ใกล้แล้ว! 😊','ยังไม่ถูก! 🌈'],
+    streakSuper: n=>`🔥 ต่อเนื่อง ${n} ครั้ง! 👑`,
+    streakGood:  n=>`⚡ ต่อเนื่อง ${n} ครั้ง! 🌟`,
   }
 };
 let lang = 'zh';
-function toggleLang() { lang = lang === 'zh' ? 'th' : 'zh'; applyLang(); updateUI(); }
+function toggleLang() { lang = lang === 'zh' ? 'th' : 'zh'; applyLang(); updateScoreUI(); }
 function applyLang() {
   const l = L[lang];
   document.getElementById('title-h1').textContent = l.title;
@@ -298,91 +391,97 @@ function applyLang() {
   document.getElementById('s-label').textContent = l.streakLabel;
   document.getElementById('s-suffix').textContent = l.streakSuffix;
   document.getElementById('q-label').textContent = l.qLabel;
-  document.getElementById('answers-label').textContent = l.ansLabel;
+  document.getElementById('ans-label').textContent = l.ansLabel;
   document.getElementById('replay-label').textContent = l.replayLabel;
-  document.getElementById('next-btn').textContent = l.nextBtn;
+  document.getElementById('q-next-btn').textContent = l.nextBtn;
   document.getElementById('hint-title').textContent = l.hintTitle;
   document.getElementById('lang-btn').textContent = l.langBtn;
+  document.getElementById('tab-quiz').textContent = l.tabQuiz;
+  document.getElementById('tab-match').textContent = l.tabMatch;
+  document.getElementById('m-audio-label').textContent = l.mAudioLabel;
+  document.getElementById('match-divider').textContent = l.mDivider;
+  document.getElementById('m-complete-msg').textContent = l.mCompleteMsg;
+  document.getElementById('m-complete-detail').textContent = l.mCompleteDetail;
 }
 
-// ── Data ──────────────────────────────────────────────────────
+// ══════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════
 const CONSONANTS = [
-  ['ก','k','mid','ก ไก่','發音類似 k，不送氣'],
-  ['ข','kh','high','ข ไข่','發音類似 k，送氣'],
-  ['ค','kh','low','ค ควาย','發音類似 k，送氣'],
-  ['จ','j','mid','จ จาน','發音類似 j'],
-  ['ช','ch','low','ช ช้าง','發音類似 ch'],
-  ['ด','d','mid','ด เด็ก','發音類似 d'],
-  ['ต','t','mid','ต เต่า','發音類似 t，不送氣'],
-  ['ถ','th','high','ถ ถุง','發音類似 t，送氣'],
-  ['ท','th','low','ท ทหาร','發音類似 t，送氣'],
-  ['น','n','low','น หนู','發音類似 n'],
-  ['บ','b','mid','บ ใบไม้','發音類似 b'],
-  ['ป','p','mid','ป ปลา','發音類似 p，不送氣'],
-  ['ผ','ph','high','ผ ผึ้ง','發音類似 p，送氣'],
-  ['พ','ph','low','พ พาน','發音類似 p，送氣'],
-  ['ม','m','low','ม ม้า','發音類似 m'],
-  ['ร','r','low','ร เรือ','發音類似 r'],
-  ['ล','l','low','ล ลิง','發音類似 l'],
-  ['ว','w','low','ว แหวน','發音類似 w'],
-  ['ส','s','high','ส เสือ','發音類似 s'],
-  ['ห','h','high','ห หีบ','發音類似 h'],
-  ['อ','–','mid','อ อ่าง','聲門塞音'],
+  ['ก','k','ก ไก่','不送氣 k'],['ข','kh','ข ไข่','送氣 k'],['ค','kh','ค ควาย','送氣 k（低）'],
+  ['จ','j','จ จาน','j 音'],['ช','ch','ช ช้าง','ch 音'],['ด','d','ด เด็ก','d 音'],
+  ['ต','t','ต เต่า','不送氣 t'],['ถ','th','ถ ถุง','送氣 t'],['ท','th','ท ทหาร','送氣 t（低）'],
+  ['น','n','น หนู','n 音'],['บ','b','บ ใบไม้','b 音'],['ป','p','ป ปลา','不送氣 p'],
+  ['ผ','ph','ผ ผึ้ง','送氣 p'],['พ','ph','พ พาน','送氣 p（低）'],['ม','m','ม ม้า','m 音'],
+  ['ร','r','ร เรือ','r 音'],['ล','l','ล ลิง','l 音'],['ว','w','ว แหวน','w 音'],
+  ['ส','s','ส เสือ','s 音'],['ห','h','ห หีบ','h 音'],['อ','–','อ อ่าง','無輔音'],
 ];
 const VOWELS = [
-  [c => c + 'า',        'aa',  'สระ อา',   '長 a 音，如「啊～」'],
-  [c => c + 'ะ',        'a',   'สระ อะ',   '短 a 音'],
-  [c => c + 'ิ',        'i',   'สระ อิ',   '短 i 音，如「衣」'],
-  [c => c + 'ี',        'ii',  'สระ อี',   '長 i 音，如「伊～」'],
-  [c => c + 'ุ',        'u',   'สระ อุ',   '短 u 音，如「污」'],
-  [c => c + 'ู',        'uu',  'สระ อู',   '長 u 音，如「屋～」'],
-  [c => 'เ' + c,        'ee',  'สระ เอ',   '類似英文 say 的 ay'],
-  [c => 'แ' + c,        'ae',  'สระ แอ',   '類似英文 cat 的 a'],
-  [c => 'โ' + c,        'oo',  'สระ โอ',   '類似英文 go 的 o'],
-  [c => c + 'อ',        'o',   'สระ อ',    '短 o 音'],
-  [c => 'เ' + c + 'า',  'ao',  'สระ เอา',  '複合母音，如「澳」'],
-  [c => 'เ' + c + 'ีย', 'ia',  'สระ เอีย', '複合母音 ia'],
+  [c=>c+'า',  'สระ อา',  '長 a'],  [c=>c+'ะ',  'สระ อะ',  '短 a'],
+  [c=>c+'ิ',  'สระ อิ',  '短 i'],  [c=>c+'ี',  'สระ อี',  '長 i'],
+  [c=>c+'ุ',  'สระ อุ',  '短 u'],  [c=>c+'ู',  'สระ อู',  '長 u'],
+  [c=>'เ'+c,  'สระ เอ',  'ee 音'], [c=>'แ'+c,  'สระ แอ',  'ae 音'],
+  [c=>'โ'+c,  'สระ โอ',  'oo 音'], [c=>c+'อ',  'สระ อ',   '短 o'],
+  [c=>'เ'+c+'า','สระ เอา','ao 音'],[c=>'เ'+c+'ีย','สระ เอีย','ia 音'],
 ];
 
-// ── Game state ──────────────────────────────────────────────
+// ══════════════════════════════════════════
+//  MODE SWITCHER
+// ══════════════════════════════════════════
+let currentMode = 'quiz';
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('quiz-mode').style.display = mode === 'quiz' ? 'flex' : 'none';
+  document.getElementById('match-mode').style.display = mode === 'match' ? 'flex' : 'none';
+  document.getElementById('tab-quiz').classList.toggle('active', mode === 'quiz');
+  document.getElementById('tab-match').classList.toggle('active', mode === 'match');
+  if (mode === 'quiz') quizNewQ();
+  else initMatchRound();
+}
+
+// ══════════════════════════════════════════
+//  GLOBAL SCORE
+// ══════════════════════════════════════════
 let streak = 0, totalQ = 0, totalC = 0;
-let curCon, curVow, answered;
+function updateScoreUI() {
+  const l = L[lang];
+  document.getElementById('s-num').textContent = streak;
+  document.getElementById('score-text').textContent = l.score(totalC, totalQ);
+  const badge = document.getElementById('streak-badge');
+  badge.classList.remove('bump'); void badge.offsetWidth; badge.classList.add('bump');
+  badge.querySelector('.s-icon').textContent = streak >= 5 ? '🔥' : streak >= 3 ? '⚡' : '🏅';
+}
+function showBubble(msg) {
+  const el = document.getElementById('subtitle');
+  el.textContent = msg;
+  setTimeout(() => { el.textContent = L[lang].subtitle; }, 2200);
+}
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+// ══════════════════════════════════════════
+//  QUIZ MODE
+// ══════════════════════════════════════════
+let qCurCon, qCurVow, qAnswered;
 
-function newQ() {
-  answered = false;
+function quizNewQ() {
+  qAnswered = false;
   document.getElementById('reveal-label').innerHTML = '';
   document.getElementById('hint-box').classList.remove('show');
-  document.getElementById('next-btn').className = '';
-
-  curCon = pickRandom(CONSONANTS);
-  curVow = pickRandom(VOWELS);
-
-  // Animate card
-  const card = document.getElementById('speaker-card');
-  card.style.animation = 'none'; void card.offsetWidth;
-  card.style.animation = 'slideIn 0.38s cubic-bezier(0.175,0.885,0.32,1.275)';
-
-  buildAnswers();
-
-  // Auto-play after short delay
+  document.getElementById('q-next-btn').className = '';
+  qCurCon = pick(CONSONANTS);
+  qCurVow = pick(VOWELS);
+  buildQuizAnswers();
   setTimeout(speakSyllable, 500);
 }
 
-function buildAnswers() {
-  const correct = curVow[0](curCon[0]);
+function buildQuizAnswers() {
+  const correct = qCurVow[0](qCurCon[0]);
   const pool = new Set([correct]);
-
   let attempts = 0;
-  while (pool.size < 4 && attempts < 300) {
-    attempts++;
-    const wc = pickRandom(CONSONANTS);
-    const wv = pickRandom(VOWELS);
-    const w = wv[0](wc[0]);
+  while (pool.size < 4 && attempts++ < 300) {
+    const w = pick(VOWELS)[0](pick(CONSONANTS)[0]);
     if (w !== correct) pool.add(w);
   }
-
   const opts = [...pool].sort(() => Math.random() - 0.5).slice(0, 4);
   if (!opts.includes(correct)) opts[Math.floor(Math.random() * 4)] = correct;
 
@@ -392,80 +491,256 @@ function buildAnswers() {
     const btn = document.createElement('button');
     btn.className = 'ans-btn';
     btn.textContent = opt;
-    btn.addEventListener('click', () => {
-      speakThai(opt);
-      onAnswer(opt, btn);
-    });
+    btn.addEventListener('click', () => { speakThai(opt, 'q-speaker-btn'); quizOnAnswer(opt, btn); });
     grid.appendChild(btn);
   });
 }
 
-function onAnswer(chosen, btn) {
-  if (answered) return;
-  answered = true;
-  totalQ++;
-  const correct = curVow[0](curCon[0]);
+function quizOnAnswer(chosen, btn) {
+  if (qAnswered) return;
+  qAnswered = true; totalQ++;
+  const correct = qCurVow[0](qCurCon[0]);
   const l = L[lang];
 
   if (chosen === correct) {
     totalC++; streak++;
     btn.classList.add('correct');
     document.querySelectorAll('.ans-btn').forEach(b => { if (b !== btn) { b.disabled = true; b.style.opacity = '0.35'; } });
-    if (streak >= 5 && streak % 5 === 0) {
-      launchConfetti(50); showBadge('🏆');
-      showBubble(l.streakSuper(streak));
-    } else if (streak >= 3 && streak % 3 === 0) {
-      launchConfetti(28); showBadge('🎊');
-      showBubble(l.streakGood(streak));
-    } else {
-      launchConfetti(14); showBadge('✅');
-      showBubble(pickRandom(l.correct));
-    }
+    if (streak >= 5 && streak % 5 === 0) { launchConfetti(50); showBadge('🏆'); showBubble(l.streakSuper(streak)); }
+    else if (streak >= 3 && streak % 3 === 0) { launchConfetti(28); showBadge('🎊'); showBubble(l.streakGood(streak)); }
+    else { launchConfetti(14); showBadge('✅'); showBubble(pick(l.correct)); }
   } else {
     streak = 0;
-    btn.classList.add('wrong');
-    btn.disabled = true; btn.style.opacity = '0.4';
-    document.querySelectorAll('.ans-btn').forEach(b => {
-      if (b.textContent === correct) b.classList.add('correct');
-    });
-    showBadge('❌');
-    showBubble(pickRandom(l.wrong));
-    // Show reveal label + hint
+    btn.classList.add('wrong'); btn.disabled = true; btn.style.opacity = '0.4';
+    document.querySelectorAll('.ans-btn').forEach(b => { if (b.textContent === correct) b.classList.add('correct'); });
+    showBadge('❌'); showBubble(pick(l.wrong));
     document.getElementById('reveal-label').innerHTML = l.revealCorrect(correct);
-    showHint();
+    document.getElementById('hint-content').innerHTML =
+      `${qCurCon[0]} <small style="color:#aaa">(${qCurCon[2]})</small><br>+ ${qCurVow[1]}<br>= <b>${correct}</b>`;
+    document.getElementById('hint-box').classList.add('show');
   }
+  updateScoreUI();
+  setTimeout(() => { document.getElementById('q-next-btn').className = 'vis'; }, 700);
+}
+function quizNextQ() { quizNewQ(); }
 
-  updateUI();
-  setTimeout(() => { document.getElementById('next-btn').className = 'vis'; }, 700);
+// ══════════════════════════════════════════
+//  MATCH MODE (連連看)
+// ══════════════════════════════════════════
+let mPairs = [];        // [{ci, vi, matched}] — 4 pairs
+let mVowOrder = [];     // display positions → pair index
+let mConOrder = [];
+let mSelVow = null;     // selected vowel position index
+let mSelCon = null;
+let mMatchedCount = 0;
+let mCurrentPairIdx = 0; // which pair's audio is currently playing
+
+function initMatchRound() {
+  document.getElementById('match-complete').classList.remove('show');
+  mPairs = [];
+  const usedC = new Set(), usedV = new Set();
+  let attempts = 0;
+  while (mPairs.length < 4 && attempts++ < 500) {
+    const ci = Math.floor(Math.random() * CONSONANTS.length);
+    const vi = Math.floor(Math.random() * VOWELS.length);
+    if (!usedC.has(ci) && !usedV.has(vi)) {
+      mPairs.push({ci, vi, matched: false});
+      usedC.add(ci); usedV.add(vi);
+    }
+  }
+  mVowOrder = [0,1,2,3].sort(() => Math.random() - 0.5);
+  mConOrder = [0,1,2,3].sort(() => Math.random() - 0.5);
+  mSelVow = null; mSelCon = null; mMatchedCount = 0;
+  mCurrentPairIdx = 0;
+
+  renderMatchTiles();
+  updateMatchProgress();
+  clearMatchLines();
+  setTimeout(() => playMatchAudio(mCurrentPairIdx), 600);
 }
 
-function showHint() {
+function renderMatchTiles() {
+  const vowRow = document.getElementById('vow-row');
+  const conRow = document.getElementById('con-row');
+  vowRow.innerHTML = ''; conRow.innerHTML = '';
+
+  mVowOrder.forEach((pairIdx, pos) => {
+    const p = mPairs[pairIdx];
+    const vow = VOWELS[p.vi];
+    const displayForm = vow[0]('□').replace('□','') || vow[1];
+    const tile = document.createElement('div');
+    tile.className = 'tile vow-tile';
+    tile.id = 'vow-' + pos;
+    tile.dataset.pos = pos;
+    tile.innerHTML = `<span class="speak-icon">🔊</span><span>${displayForm || vow[0]('◯').replace('◯','') || '?'}</span><div class="tile-sub">${vow[1]}</div>`;
+    tile.addEventListener('click', () => onTapVow(pos));
+    vowRow.appendChild(tile);
+  });
+
+  mConOrder.forEach((pairIdx, pos) => {
+    const p = mPairs[pairIdx];
+    const con = CONSONANTS[p.ci];
+    const tile = document.createElement('div');
+    tile.className = 'tile con-tile';
+    tile.id = 'con-' + pos;
+    tile.dataset.pos = pos;
+    tile.innerHTML = `<span>${con[0]}</span><div class="tile-sub">${con[2].split(' ').slice(0,2).join(' ')}</div>`;
+    tile.addEventListener('click', () => onTapCon(pos));
+    conRow.appendChild(tile);
+  });
+}
+
+function onTapVow(pos) {
+  const pairIdx = mVowOrder[pos];
+  if (mPairs[pairIdx].matched) return;
+  // Play this pair's syllable
+  playMatchAudio(pairIdx);
+  mCurrentPairIdx = pairIdx;
+
+  // Toggle selection
+  if (mSelVow === pos) { clearTileSelect(); return; }
+  document.querySelectorAll('.vow-tile').forEach(t => t.classList.remove('selected'));
+  mSelVow = pos;
+  document.getElementById('vow-' + pos).classList.add('selected');
+  if (mSelCon !== null) tryMatch();
+}
+
+function onTapCon(pos) {
+  const pairIdx = mConOrder[pos];
+  if (mPairs[pairIdx].matched) return;
+  if (mSelCon === pos) { clearTileSelect(); return; }
+  document.querySelectorAll('.con-tile').forEach(t => t.classList.remove('selected'));
+  mSelCon = pos;
+  document.getElementById('con-' + pos).classList.add('selected');
+  if (mSelVow !== null) tryMatch();
+}
+
+function tryMatch() {
+  const vPairIdx = mVowOrder[mSelVow];
+  const cPairIdx = mConOrder[mSelCon];
+
+  if (vPairIdx === cPairIdx) {
+    // Correct match!
+    mPairs[vPairIdx].matched = true;
+    mMatchedCount++;
+    totalQ++; totalC++; streak++;
+
+    const vTile = document.getElementById('vow-' + mSelVow);
+    const cTile = document.getElementById('con-' + mSelCon);
+    vTile.classList.remove('selected'); vTile.classList.add('matched');
+    cTile.classList.remove('selected'); cTile.classList.add('matched');
+
+    drawLine(vTile, cTile, vPairIdx);
+
+    // Speak the matched syllable
+    const p = mPairs[vPairIdx];
+    const syllable = VOWELS[p.vi][0](CONSONANTS[p.ci][0]);
+    speakThai(syllable, 'm-speaker-btn');
+    showMatchAudioInfo(vPairIdx, true);
+
+    launchConfetti(16); showBadge('✅');
+    const l = L[lang];
+    if (streak >= 5 && streak % 5 === 0) showBubble(l.streakSuper(streak));
+    else if (streak >= 3 && streak % 3 === 0) showBubble(l.streakGood(streak));
+    else showBubble(pick(l.correct));
+
+    mSelVow = null; mSelCon = null;
+    updateScoreUI(); updateMatchProgress();
+
+    if (mMatchedCount >= 4) {
+      setTimeout(showMatchComplete, 800);
+    } else {
+      // auto-play next unmatched pair
+      setTimeout(() => {
+        const nextIdx = mPairs.findIndex(p => !p.matched);
+        if (nextIdx >= 0) { mCurrentPairIdx = nextIdx; playMatchAudio(nextIdx); }
+      }, 1200);
+    }
+  } else {
+    // Wrong
+    streak = 0; updateScoreUI();
+    const vTile = document.getElementById('vow-' + mSelVow);
+    const cTile = document.getElementById('con-' + mSelCon);
+    vTile.classList.add('wrong-flash'); cTile.classList.add('wrong-flash');
+    showBadge('❌'); showBubble(pick(L[lang].wrong));
+    setTimeout(() => {
+      vTile.classList.remove('wrong-flash', 'selected');
+      cTile.classList.remove('wrong-flash', 'selected');
+      mSelVow = null; mSelCon = null;
+    }, 500);
+  }
+}
+
+function clearTileSelect() {
+  document.querySelectorAll('.tile').forEach(t => t.classList.remove('selected'));
+  mSelVow = null; mSelCon = null;
+}
+
+function playMatchAudio(pairIdx) {
+  const p = mPairs[pairIdx];
+  const syllable = VOWELS[p.vi][0](CONSONANTS[p.ci][0]);
+  speakThai(syllable, 'm-speaker-btn');
+  showMatchAudioInfo(pairIdx, false);
+}
+
+function showMatchAudioInfo(pairIdx, revealed) {
+  const p = mPairs[pairIdx];
+  const syllable = VOWELS[p.vi][0](CONSONANTS[p.ci][0]);
+  document.getElementById('m-audio-syllable').textContent = revealed ? syllable : '???';
+}
+
+function replayMatchAudio() {
+  playMatchAudio(mCurrentPairIdx);
+}
+
+function updateMatchProgress() {
   const l = L[lang];
-  const isZh = lang === 'zh';
-  document.getElementById('hint-content').innerHTML =
-    `${curCon[0]} <small style="color:#aaa">(${curCon[3]})</small><br>` +
-    `+ ${curVow[2]}${isZh ? '：' + curVow[3] : ''}<br>` +
-    `= <b>${curVow[0](curCon[0])}</b>`;
-  document.getElementById('hint-box').classList.add('show');
+  document.getElementById('m-matched').textContent = mMatchedCount;
+  document.getElementById('match-progress').innerHTML = l.mProgress(mMatchedCount, 4);
 }
 
-function updateUI() {
-  const l = L[lang];
-  document.getElementById('s-num').textContent = streak;
-  document.getElementById('score-text').textContent = l.score(totalC, totalQ);
-  const badge = document.getElementById('streak-badge');
-  badge.classList.remove('bump'); void badge.offsetWidth; badge.classList.add('bump');
-  badge.querySelector('.s-icon').textContent = streak >= 5 ? '🔥' : streak >= 3 ? '⚡' : '🏅';
+function drawLine(vTile, cTile, colorIdx) {
+  const svg = document.getElementById('match-svg');
+  const arena = document.getElementById('match-arena');
+  const aRect = arena.getBoundingClientRect();
+  const vRect = vTile.getBoundingClientRect();
+  const cRect = cTile.getBoundingClientRect();
+
+  const x1 = vRect.left + vRect.width/2 - aRect.left;
+  const y1 = vRect.top  + vRect.height   - aRect.top;
+  const x2 = cRect.left + cRect.width/2  - aRect.left;
+  const y2 = cRect.top                   - aRect.top;
+
+  const colors = ['#9B59B6','#3D5AF1','#FF8C00','#00C853'];
+  const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+  line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+  line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+  line.setAttribute('stroke', colors[colorIdx % colors.length]);
+  line.setAttribute('stroke-width', '4');
+  line.setAttribute('stroke-linecap','round');
+  line.setAttribute('stroke-dasharray','8 4');
+  line.setAttribute('opacity','0.85');
+
+  // Animate the line
+  const len = Math.hypot(x2-x1, y2-y1);
+  line.setAttribute('stroke-dasharray', len);
+  line.setAttribute('stroke-dashoffset', len);
+  line.style.animation = 'drawLine 0.4s ease forwards';
+  svg.appendChild(line);
 }
 
-function nextQ() { newQ(); }
-
-function showBubble(msg) {
-  const el = document.getElementById('subtitle');
-  el.textContent = msg;
-  setTimeout(() => { el.textContent = L[lang].subtitle; }, 2200);
+function clearMatchLines() {
+  document.getElementById('match-svg').innerHTML = '';
 }
 
+function showMatchComplete() {
+  launchConfetti(60);
+  document.getElementById('match-complete').classList.add('show');
+}
+
+// ══════════════════════════════════════════
+//  CONFETTI & BADGE
+// ══════════════════════════════════════════
 function launchConfetti(n) {
   const layer = document.getElementById('cf-layer');
   layer.innerHTML = '';
@@ -473,26 +748,35 @@ function launchConfetti(n) {
   for (let i = 0; i < n; i++) {
     setTimeout(() => {
       const el = document.createElement('div');
-      el.className = 'cf';
-      el.textContent = em[Math.floor(Math.random() * em.length)];
-      el.style.left = (Math.random() * 105 - 5) + 'vw';
-      el.style.fontSize = (1 + Math.random() * 1.4) + 'rem';
-      const dur = 1.6 + Math.random() * 2.2;
+      el.className = 'cf'; el.textContent = pick(em);
+      el.style.left = (Math.random()*105-5)+'vw';
+      el.style.fontSize = (1+Math.random()*1.4)+'rem';
+      const dur = 1.6+Math.random()*2.2;
       el.style.animation = `cfFall ${dur}s linear forwards`;
       layer.appendChild(el);
-      setTimeout(() => el.remove(), dur * 1000 + 100);
-    }, Math.random() * 500);
+      setTimeout(()=>el.remove(), dur*1000+100);
+    }, Math.random()*500);
   }
 }
 function showBadge(e) {
   const el = document.getElementById('big-badge');
   el.textContent = e; el.className = 'show';
-  setTimeout(() => { el.className = 'hide'; }, 600);
+  setTimeout(()=>{el.className='hide';},600);
 }
 
-// Init
+// ══════════════════════════════════════════
+//  SVG draw animation
+// ══════════════════════════════════════════
+const svgStyle = document.createElement('style');
+svgStyle.textContent = `@keyframes drawLine { to { stroke-dashoffset: 0; } }`;
+document.head.appendChild(svgStyle);
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
 applyLang();
-newQ();
+updateScoreUI();
+quizNewQ();
 </script>
 </body>
 </html>
