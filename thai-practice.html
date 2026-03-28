@@ -303,13 +303,7 @@ body {
     <div class="tile-row" id="con-row"></div>
   </div>
 
-  <!-- Round complete -->
-  <div class="match-complete" id="match-complete">
-    <div class="match-complete-icon">🎊</div>
-    <div class="match-complete-msg" id="m-complete-msg">全部配對完成！</div>
-    <div class="match-complete-detail" id="m-complete-detail">太厲害了！繼續下一關</div>
-    <button class="btn-next-round" onclick="initMatchRound()">🔄 下一關</button>
-  </div>
+  <button id="m-next-btn" onclick="initMatchRound()" style="display:none;margin-top:16px;background:linear-gradient(135deg,#FF6B9D,#FF4757);color:#fff;border:none;border-radius:50px;padding:14px 44px;font-size:1.1rem;font-weight:900;cursor:pointer;font-family:inherit;box-shadow:0 6px 0 #B71C55;letter-spacing:2px;">✨ ต่อไป ➡️</button>
 </div>
 
 <script>
@@ -479,7 +473,7 @@ let mMatchedCount = 0;
 let mCurrentPairIdx = 0; // which pair's audio is currently playing
 
 function initMatchRound() {
-  document.getElementById('match-complete').classList.remove('show');
+  document.getElementById('m-next-btn').style.display = 'none';
   mPairs = [];
   const usedC = new Set(), usedV = new Set();
   let attempts = 0;
@@ -590,8 +584,12 @@ function tryMatch() {
     mSelVow = null; mSelCon = null;
     updateScoreUI(); updateMatchProgress();
 
-    // Next round immediately after correct match
-    setTimeout(() => initMatchRound(), 900);
+    // Show next button
+    setTimeout(() => {
+      const btn = document.getElementById('m-next-btn');
+      btn.style.display = 'inline-block';
+      btn.style.animation = 'nextIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275)';
+    }, 700);
   } else {
     // Wrong
     streak = 0; updateScoreUI();
