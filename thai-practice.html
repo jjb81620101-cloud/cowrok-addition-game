@@ -496,7 +496,6 @@ function initMatchRound() {
   mCurrentPairIdx = 0;
 
   renderMatchTiles();
-  updateMatchProgress();
   clearMatchLines();
   setTimeout(() => playMatchAudio(mCurrentPairIdx), 600);
 }
@@ -587,7 +586,7 @@ function tryMatch() {
     else showBubble(pick(l.correct));
 
     mSelVow = null; mSelCon = null;
-    updateScoreUI(); updateMatchProgress();
+    updateScoreUI();
 
     // Show fixed next button overlay
     setTimeout(() => {
@@ -630,11 +629,6 @@ function replayMatchAudio() {
   playMatchAudio(mCurrentPairIdx);
 }
 
-function updateMatchProgress() {
-  const l = L;
-  document.getElementById('m-matched').textContent = mMatchedCount;
-  document.getElementById('match-progress').innerHTML = l.mProgress(mMatchedCount, 4);
-}
 
 function drawLine(vTile, cTile, colorIdx) {
   const svg = document.getElementById('match-svg');
