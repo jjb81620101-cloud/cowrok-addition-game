@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MASARU 電扇詳細規格 SCFP-900 vs SCFP-910</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --blue: #00d9ff;
+    --pink: #ff6b9d;
+    --green: #00ff88;
+    --gold: #FFD700;
+    --bg1: #1a1a2e;
+    --bg2: #16213e;
+    --bg3: #0f3460;
+    --card: rgba(255,255,255,0.07);
+    --border: rgba(255,255,255,0.1);
+    --text: #ccd6f6;
+    --muted: #8892b0;
+  }
+  body {
+    font-family: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', sans-serif;
+    background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 60%, var(--bg3) 100%);
+    min-height: 100vh;
+    color: #fff;
+    padding: 28px 14px 40px;
+  }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .header h1 {
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    font-weight: 900;
+    background: linear-gradient(90deg, var(--blue), var(--green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+  }
+  .header p { color: var(--muted); font-size: 0.9rem; letter-spacing: 2px; }
+
+  /* ── Section title ── */
+  .section-title {
+    text-align: center;
+    font-size: 0.8rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 28px 0 14px;
+  }
+
+  /* ── Fan Cards ── */
+  .fan-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    max-width: 760px;
+    margin: 0 auto 28px;
+  }
+
+  .fan-card {
+    background: var(--card);
+    border-radius: 22px;
+    padding: 22px 18px;
+    border: 1px solid var(--border);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  }
+  .fan-card.c900 { border-top: 4px solid var(--blue); }
+  .fan-card.c910 { border-top: 4px solid var(--pink); }
+
+  .fan-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .fan-icon { font-size: 2.8rem; }
+  .fan-title { flex: 1; }
+  .fan-model { font-size: 1.15rem; font-weight: 900; }
+  .c900 .fan-model { color: var(--blue); }
+  .c910 .fan-model { color: var(--pink); }
+  .fan-tag {
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-weight: 700;
+    margin-top: 4px;
+    display: inline-block;
+  }
+  .c900 .fan-tag { background: rgba(0,217,255,0.15); color: var(--blue); border: 1px solid rgba(0,217,255,0.3); }
+  .c910 .fan-tag { background: rgba(255,107,157,0.15); color: var(--pink); border: 1px solid rgba(255,107,157,0.3); }
+
+  .spec-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 0.85rem;
+    gap: 6px;
+  }
+  .spec-row:last-child { border-bottom: none; }
+  .spec-k { color: var(--muted); white-space: nowrap; }
+  .spec-v { font-weight: 700; color: var(--text); text-align: right; }
+  .spec-v.good { color: var(--green); }
+  .spec-v.na { color: #444; font-weight: 400; font-style: italic; }
+
+  .price-row {
+    margin-top: 16px;
+    padding: 12px 0 0;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+  .price-main { font-size: 2rem; font-weight: 900; color: #fff; }
+  .price-note { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+  /* ── Comparison Table ── */
+  .table-wrap {
+    max-width: 760px;
+    margin: 0 auto 28px;
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  thead th {
+    padding: 12px 16px;
+    font-weight: 900;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  thead th:first-child { text-align: left; color: var(--muted); }
+  thead th:nth-child(2) { color: var(--blue); background: rgba(0,217,255,0.07); }
+  thead th:nth-child(3) { color: var(--pink); background: rgba(255,107,157,0.07); }
+  tbody tr { border-bottom: 1px solid rgba(255,255,255,0.06); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,0.03); }
+  tbody td { padding: 10px 16px; color: var(--text); }
+  tbody td:first-child { color: var(--muted); }
+  tbody td:nth-child(2) { font-weight: 700; background: rgba(0,217,255,0.04); text-align: center; }
+  tbody td:nth-child(3) { font-weight: 700; background: rgba(255,107,157,0.04); text-align: center; }
+  .win { color: var(--green) !important; }
+  .same { color: var(--gold) !important; }
+
+  /* ── Platform Badges ── */
+  .platforms {
+    max-width: 760px;
+    margin: 0 auto 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .platform-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 18px;
+    border: 1px solid var(--border);
+  }
+  .platform-card h3 {
+    font-size: 1rem;
+    font-weight: 900;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .platform-card a {
+    display: block;
+    color: var(--blue);
+    font-size: 0.82rem;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    text-decoration: none;
+    word-break: break-all;
+    transition: color 0.2s;
+  }
+  .platform-card a:hover { color: var(--green); }
+  .platform-card a:last-child { border-bottom: none; }
+  .platform-card .link-label { color: var(--muted); font-size: 0.75rem; margin-bottom: 2px; display: block; }
+
+  /* ── Verdict ── */
+  .verdict {
+    max-width: 760px;
+    margin: 0 auto 28px;
+    background: var(--card);
+    border-radius: 20px;
+    padding: 22px;
+    border: 1px solid var(--border);
+  }
+  .verdict h2 {
+    font-size: 1rem;
+    color: var(--green);
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .verdict-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 0.88rem;
+  }
+  .verdict-item:last-child { border-bottom: none; }
+  .vi-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+  .vi-text { color: var(--text); line-height: 1.5; }
+  .vi-text strong { color: #fff; }
+
+  /* ── Choose Cards ── */
+  .choose-grid {
+    max-width: 760px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .choose-card {
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+  }
+  .choose-card.blue { background: rgba(0,217,255,0.1); border: 1px solid rgba(0,217,255,0.25); }
+  .choose-card.pink { background: rgba(255,107,157,0.1); border: 1px solid rgba(255,107,157,0.25); }
+  .choose-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 6px; }
+  .choose-model { font-size: 1.2rem; font-weight: 900; margin-bottom: 6px; }
+  .choose-card.blue .choose-model { color: var(--blue); }
+  .choose-card.pink .choose-model { color: var(--pink); }
+  .choose-for { font-size: 0.82rem; color: var(--text); line-height: 1.5; }
+
+  /* ── Battery note ── */
+  .battery-note {
+    max-width: 760px;
+    margin: 14px auto 0;
+    background: rgba(255,215,0,0.08);
+    border: 1px solid rgba(255,215,0,0.2);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.83rem;
+    color: var(--gold);
+    text-align: center;
+  }
+
+  @media (max-width: 480px) {
+    .fan-grid, .platforms, .choose-grid { grid-template-columns: 1fr; }
+    table { font-size: 0.8rem; }
+    tbody td, thead th { padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🌀 MASARU 電扇詳細比較</h1>
+  <p>SCFP-900 vs SCFP-910 · 泰國電商資料</p>
+</div>
+
+<!-- Fan Cards -->
+<div class="section-title">詳細規格</div>
+<div class="fan-grid">
+
+  <div class="fan-card c900">
+    <div class="fan-header">
+      <div class="fan-icon">🌪️</div>
+      <div class="fan-title">
+        <div class="fan-model">SCFP-900</div>
+        <div class="fan-tag">12 吋 · 強勁風力</div>
+      </div>
+    </div>
+    <div class="spec-row"><span class="spec-k">尺寸</span><span class="spec-v good">12 吋</span></div>
+    <div class="spec-row"><span class="spec-k">電壓</span><span class="spec-v">20V</span></div>
+    <div class="spec-row"><span class="spec-k">轉速（最高）</span><span class="spec-v good">2,600 RPM</span></div>
+    <div class="spec-row"><span class="spec-k">風速段數</span><span class="spec-v good">3 段（1600/2000/2600）</span></div>
+    <div class="spec-row"><span class="spec-k">風速</span><span class="spec-v good">6.7 M/S</span></div>
+    <div class="spec-row"><span class="spec-k">旋轉角度</span><span class="spec-v good">270°</span></div>
+    <div class="spec-row"><span class="spec-k">葉片尺寸</span><span class="spec-v">8 吋</span></div>
+    <div class="spec-row"><span class="spec-k">噪音</span><span class="spec-v">60 dB</span></div>
+    <div class="spec-row"><span class="spec-k">LED 燈</span><span class="spec-v good">✅ 有</span></div>
+    <div class="spec-row"><span class="spec-k">重量（含電池）</span><span class="spec-v">2.7 kg</span></div>
+    <div class="spec-row"><span class="spec-k">電池系統</span><span class="spec-v">20V POWERTURBO</span></div>
+    <div class="spec-row"><span class="spec-k">保固</span><span class="spec-v">7 個月</span></div>
+    <div class="price-row">
+      <div class="price-main">฿1,499</div>
+      <div class="price-note">Lazada / Shopee</div>
+    </div>
+  </div>
+
+  <div class="fan-card c910">
+    <div class="fan-header">
+      <div class="fan-icon">💨</div>
+      <div class="fan-title">
+        <div class="fan-model">SCFP-910</div>
+        <div class="fan-tag">10 吋 · 輕巧攜帶</div>
+      </div>
+    </div>
+    <div class="spec-row"><span class="spec-k">尺寸</span><span class="spec-v">10 吋</span></div>
+    <div class="spec-row"><span class="spec-k">電壓</span><span class="spec-v">20V</span></div>
+    <div class="spec-row"><span class="spec-k">轉速（空載最高）</span><span class="spec-v good">6,300 RPM</span></div>
+    <div class="spec-row"><span class="spec-k">風速段數</span><span class="spec-v good">3 段</span></div>
+    <div class="spec-row"><span class="spec-k">風速</span><span class="spec-v good">18 KM/H</span></div>
+    <div class="spec-row"><span class="spec-k">旋轉角度</span><span class="spec-v na">未標示</span></div>
+    <div class="spec-row"><span class="spec-k">葉片尺寸</span><span class="spec-v">6 吋</span></div>
+    <div class="spec-row"><span class="spec-k">外箱尺寸</span><span class="spec-v">18.5×28×38 cm</span></div>
+    <div class="spec-row"><span class="spec-k">LED 燈</span><span class="spec-v good">✅ 有（3 段調光）</span></div>
+    <div class="spec-row"><span class="spec-k">重量（不含電池）</span><span class="spec-v good">2.05 kg</span></div>
+    <div class="spec-row"><span class="spec-k">重量（含電池）</span><span class="spec-v">2.7 kg</span></div>
+    <div class="spec-row"><span class="spec-k">電池系統</span><span class="spec-v">20V POWERTURBO</span></div>
+    <div class="spec-row"><span class="spec-k">保固</span><span class="spec-v">7 個月</span></div>
+    <div class="price-row">
+      <div class="price-main">฿1,499</div>
+      <div class="price-note">Lazada / Shopee</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Comparison Table -->
+<div class="section-title">規格對照表</div>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>項目</th>
+        <th>SCFP-900</th>
+        <th>SCFP-910</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>尺寸</td><td class="win">12 吋 ✓</td><td>10 吋</td></tr>
+      <tr><td>最高轉速</td><td class="win">2,600 RPM</td><td>6,300 RPM（空載）</td></tr>
+      <tr><td>風速</td><td>6.7 M/S</td><td class="win">18 KM/H（≈5 M/S）</td></tr>
+      <tr><td>旋轉角度</td><td class="win">270° ✓</td><td class="na">未標示</td></tr>
+      <tr><td>風速段數</td><td class="same">3 段 ＝</td><td class="same">3 段 ＝</td></tr>
+      <tr><td>LED 燈調光</td><td>有（固定）</td><td class="win">有（3 段調光）✓</td></tr>
+      <tr><td>重量（空機）</td><td>–</td><td class="win">2.05 kg ✓（較輕）</td></tr>
+      <tr><td>重量（含電池）</td><td class="same">2.7 kg ＝</td><td class="same">2.7 kg ＝</td></tr>
+      <tr><td>電池相容性</td><td class="same">20V POWERTURBO ＝</td><td class="same">20V POWERTURBO ＝</td></tr>
+      <tr><td>保固</td><td class="same">7 個月 ＝</td><td class="same">7 個月 ＝</td></tr>
+      <tr><td>價格</td><td class="same">฿1,499 ＝</td><td class="same">฿1,499 ＝</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Platforms -->
+<div class="section-title">購買連結（泰國電商）</div>
+<div class="platforms">
+  <div class="platform-card">
+    <h3>🟠 Lazada Thailand</h3>
+    <span class="link-label">SCFP-900（12 吋，附LED）</span>
+    <a href="https://www.lazada.co.th/products/masaru-scfp-900-12-led-67-ms-2600rpm-powerturbo-20v-1-100-i5508558950.html" target="_blank">lazada.co.th → MASARU SCFP-900</a>
+    <span class="link-label" style="margin-top:10px">SCFP-910（10 吋，附LED）</span>
+    <a href="https://www.lazada.co.th/products/masaru-20v-scfp-910-led-3-10-masaru-powerturbo-7-i5782953677.html" target="_blank">lazada.co.th → MASARU SCFP-910</a>
+  </div>
+  <div class="platform-card">
+    <h3>🔴 Shopee Thailand</h3>
+    <span class="link-label">SCFP-900（12 吋）</span>
+    <a href="https://shopee.co.th/MASARU-%E0%B8%9E%E0%B8%B1%E0%B8%94%E0%B8%A5%E0%B8%A1%E0%B9%84%E0%B8%A3%E0%B9%89%E0%B8%AA%E0%B8%B2%E0%B8%A2-20V-%E0%B8%A3%E0%B8%B8%E0%B9%88%E0%B8%99-SCFP-900-12-%E0%B8%99%E0%B8%B4%E0%B9%89%E0%B8%A7-i.1124841091.27912650475" target="_blank">shopee.co.th → MASARU SCFP-900</a>
+    <span class="link-label" style="margin-top:10px">SCFP-910（10 吋）</span>
+    <a href="https://shopee.co.th/Masaru-SCFP-910-%E0%B8%9E%E0%B8%B1%E0%B8%94%E0%B8%A5%E0%B8%A1%E0%B9%84%E0%B8%A3%E0%B9%89%E0%B8%AA%E0%B8%B2%E0%B8%A2-10-%E0%B8%99%E0%B8%B4%E0%B9%89%E0%B8%A7-i.956145964.28713171797" target="_blank">shopee.co.th → MASARU SCFP-910</a>
+    <span class="link-label" style="margin-top:10px">官方網站</span>
+    <a href="https://masaru-powertools.com" target="_blank">masaru-powertools.com</a>
+  </div>
+</div>
+
+<!-- Battery note -->
+<div class="battery-note">
+  ⚡ 兩台使用相同 <strong>20V POWERTURBO</strong> 電池系統，電池可互換共用！
+</div>
+
+<!-- Verdict -->
+<div class="section-title">綜合分析</div>
+<div class="verdict">
+  <h2>💡 哪台適合你？</h2>
+  <div class="verdict-item">
+    <span class="vi-icon">🌀</span>
+    <div class="vi-text"><strong>風力：SCFP-900 勝出</strong> — 12 吋葉片 + 270° 旋轉，覆蓋範圍更廣、吹風感更強</div>
+  </div>
+  <div class="verdict-item">
+    <span class="vi-icon">🎒</span>
+    <div class="vi-text"><strong>攜帶性：SCFP-910 勝出</strong> — 本體僅 2.05 kg，體積小，露營旅行首選</div>
+  </div>
+  <div class="verdict-item">
+    <span class="vi-icon">🌙</span>
+    <div class="vi-text"><strong>夜間使用：SCFP-910 勝出</strong> — LED 3 段調光，可當夜燈使用；SCFP-900 燈光較固定</div>
+  </div>
+  <div class="verdict-item">
+    <span class="vi-icon">🔋</span>
+    <div class="vi-text"><strong>電池共用：兩台相同</strong> — 都用 20V POWERTURBO，若你已有 MASARU 電動工具，電池可以互換</div>
+  </div>
+  <div class="verdict-item">
+    <span class="vi-icon">💰</span>
+    <div class="vi-text"><strong>價格：完全相同</strong> — ฿1,499，建議在 Lazada / Shopee 比較各家賣家是否有優惠券</div>
+  </div>
+</div>
+
+<!-- Choose -->
+<div class="section-title">最終建議</div>
+<div class="choose-grid">
+  <div class="choose-card blue">
+    <div class="choose-label">🏆 適合這些人</div>
+    <div class="choose-model">SCFP-900</div>
+    <div class="choose-for">需要強風吹大空間<br>工地／倉庫／大房間<br>偏好廣角旋轉</div>
+  </div>
+  <div class="choose-card pink">
+    <div class="choose-label">🏆 適合這些人</div>
+    <div class="choose-model">SCFP-910</div>
+    <div class="choose-for">露營／旅行攜帶<br>需要夜燈功能<br>輕量優先</div>
+  </div>
+</div>
+
+</body>
+</html>
