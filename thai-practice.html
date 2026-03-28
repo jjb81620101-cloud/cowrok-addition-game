@@ -121,11 +121,11 @@
   .speak-btn.playing { animation: speakPulse 0.6s ease infinite alternate; }
   @keyframes speakPulse { from{transform:scale(1)} to{transform:scale(1.15)} }
   .thai-syllable {
-    font-size: clamp(2.6rem,12vw,5rem); font-weight: 900;
-    color: var(--blue); line-height: 1.1; letter-spacing: 3px;
+    font-size: clamp(3.5rem,14vw,6rem); font-weight: 900;
+    color: var(--blue); line-height: 1.1;
     animation: pop 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
-    font-family: 'Courier New', monospace;
   }
+  .q-eq { font-size: 2rem; color: #ccc; font-weight: 700; margin: 0 6px; }
   @keyframes pop { 0%{transform:scale(0) rotate(-20deg);opacity:0} 70%{transform:scale(1.12) rotate(4deg)} 100%{transform:scale(1) rotate(0)} }
 
   .decompose {
@@ -134,9 +134,9 @@
   }
   .dc-part {
     background: #f5f0ff; border-radius: 10px; padding: 4px 12px;
-    font-size: 1.3rem; font-weight: 900; color: var(--purple);
+    font-size: 2rem; font-weight: 900; color: var(--purple);
   }
-  .dc-plus { font-size: 1rem; color: #ccc; font-weight: 700; }
+  .dc-plus { font-size: 1.4rem; color: #ccc; font-weight: 700; }
 
   /* ── Answer Grid ── */
   .answers-label { font-size: 0.9rem; color: #888; font-weight: 700; margin-bottom: 10px; text-align: center; }
@@ -258,12 +258,13 @@
 </div>
 
 <div class="question-card" id="question-card">
-  <div class="q-label" id="q-label">這個拼音對應哪個音節？</div>
-  <div class="thai-syllable" id="thai-syllable">กา</div>
+  <div class="q-label" id="q-label">這個組合是哪個音節？</div>
   <div class="decompose" id="decompose">
     <div class="dc-part" id="dc-con">ก</div>
     <div class="dc-plus">＋</div>
     <div class="dc-part" id="dc-vow">า</div>
+    <span class="q-eq">=</span>
+    <div class="thai-syllable" id="thai-syllable">?</div>
   </div>
   <button class="speak-btn" id="speak-btn" onclick="speakSyllable()">🔊 聽發音</button>
 </div>
@@ -300,7 +301,7 @@ const L = {
     lv1: '🌱 初級', lv2: '🔥 中級', lv3: '⚡ 進階',
     streakLabel: '連勝', streakSuffix: '次',
     score: (c,t) => `答對 ${c} / ${t}`,
-    qLabel: '這個拼音對應哪個音節？', ansLabel: '👇 選擇正確的泰文音節',
+    qLabel: '這個組合是哪個音節？', ansLabel: '👇 選擇正確的泰文音節',
     nextBtn: '✨ 下一題 ➡️', hintTitle: '💡 提示',
     conLabel: '子音', vowLabel: '母音',
     speakHint: '🔊 點擊發音', speakBtn: '🔊 聽發音',
@@ -315,7 +316,7 @@ const L = {
     lv1: '🌱 ง่าย', lv2: '🔥 กลาง', lv3: '⚡ ยาก',
     streakLabel: 'ต่อเนื่อง', streakSuffix: 'ครั้ง',
     score: (c,t) => `ถูก ${c} / ${t}`,
-    qLabel: 'เสียงนี้ตรงกับพยางค์ใด?', ansLabel: '👇 เลือกพยางค์ภาษาไทย',
+    qLabel: 'รวมกันได้พยางค์ใด?', ansLabel: '👇 เลือกพยางค์ภาษาไทย',
     nextBtn: '✨ ต่อไป ➡️', hintTitle: '💡 คำใบ้',
     conLabel: 'พยัญชนะ', vowLabel: 'สระ',
   speakHint: '🔊 แตะเพื่อฟัง', speakBtn: '🔊 ฟังเสียง',
@@ -434,16 +435,17 @@ function newQ() {
   document.getElementById('chip-vow').textContent = displayVowForm || curVow[0]('').replace('','') || curVow[2].replace('สระ ','');
   document.getElementById('chip-vow-name').textContent = curVow[2];
 
-  // Question card — show romanization as question
+  // Question card — show Thai consonant + Thai vowel form, syllable hidden as "?"
   const card = document.getElementById('question-card');
   card.classList.remove('slide-in');
   void card.offsetWidth;
   card.classList.add('slide-in');
 
-  const roman = curCon[1] + curVow[1];
-  document.getElementById('thai-syllable').textContent = roman;
-  document.getElementById('dc-con').textContent = curCon[1];
-  document.getElementById('dc-vow').textContent = curVow[1];
+  document.getElementById('thai-syllable').textContent = '?';
+  document.getElementById('dc-con').textContent = curCon[0];
+  // show vowel form using placeholder □ then strip it
+  const vowDisplay = curVow[0]('□').replace('□', '');
+  document.getElementById('dc-vow').textContent = vowDisplay || curVow[2].replace('สระ ', '');
 
   // Hide hint
   document.getElementById('hint-box').classList.remove('show');
@@ -503,6 +505,7 @@ function onAnswer(chosen, btn) {
   if (chosen === correct) {
     totalC++; streak++;
     btn.classList.add('correct');
+    document.getElementById('thai-syllable').textContent = correct;
     document.querySelectorAll('.ans-btn').forEach(b => { if(b!==btn){b.disabled=true;b.style.opacity='0.35';} });
     const l = L[lang];
     if (streak >= 5 && streak % 5 === 0) {
@@ -519,7 +522,8 @@ function onAnswer(chosen, btn) {
     streak = 0;
     btn.classList.add('wrong');
     btn.disabled = true; btn.style.opacity = '0.4';
-    // highlight correct
+    // highlight correct + reveal syllable
+    document.getElementById('thai-syllable').textContent = correct;
     document.querySelectorAll('.ans-btn').forEach(b => {
       if (b.textContent === correct) { b.classList.add('correct'); }
     });
