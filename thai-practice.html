@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🇹🇭 泰文發音練習</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --pink: #FF6B9D; --purple: #9B59B6; --blue: #3D5AF1;
+    --green: #00C853; --gold: #FFD700; --orange: #FF8C00;
+  }
+  body {
+    font-family: 'Microsoft JhengHei','微軟正黑體','PingFang TC',sans-serif;
+    background: linear-gradient(160deg,#FFF0F5 0%,#E8F4FF 40%,#F5FFF0 100%);
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 16px 12px 32px;
+  }
+
+  /* ── Lang toggle ── */
+  #lang-btn {
+    position: fixed; top: 12px; right: 12px; z-index: 100;
+    background: #fff; border: 2px solid #ddd; border-radius: 50px;
+    padding: 6px 14px; font-size: 0.82rem; font-weight: 700;
+    cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-family: inherit; color: #444;
+  }
+
+  /* ── Header ── */
+  .title-area { text-align: center; margin-bottom: 12px; }
+  .title-area h1 {
+    font-size: clamp(1.6rem,5vw,2.6rem); font-weight: 900;
+    color: var(--pink);
+    text-shadow: 3px 3px 0 #FFB3D1;
+    animation: wiggle 3s ease-in-out infinite;
+  }
+  @keyframes wiggle { 0%,100%{transform:rotate(-1deg)} 50%{transform:rotate(1deg)} }
+  .subtitle { font-size: 0.95rem; color: var(--purple); font-weight: 700; margin-top: 4px; }
+
+  /* ── Level Tabs ── */
+  .level-tabs {
+    display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; justify-content: center;
+  }
+  .level-btn {
+    border: none; border-radius: 50px; padding: 8px 20px;
+    font-size: 0.85rem; font-weight: 700; cursor: pointer;
+    font-family: inherit; transition: all 0.2s;
+    background: rgba(255,255,255,0.7); color: #888; border: 2px solid #e0e0e0;
+  }
+  .level-btn.active { color: #fff; border-color: transparent; }
+  .level-btn.lv1.active { background: linear-gradient(135deg,#4CAF50,#2E7D32); }
+  .level-btn.lv2.active { background: linear-gradient(135deg,#FF8C00,#E65100); }
+  .level-btn.lv3.active { background: linear-gradient(135deg,#9C27B0,#6A1B9A); }
+
+  /* ── Top bar ── */
+  .top-bar {
+    display: flex; gap: 10px; margin-bottom: 14px;
+    flex-wrap: wrap; justify-content: center;
+  }
+  .streak-badge {
+    display: flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg,#FFD700,#FF8C00);
+    border-radius: 50px; padding: 8px 18px;
+    box-shadow: 0 4px 14px rgba(255,165,0,0.4);
+    border: 3px solid rgba(255,255,255,0.6);
+  }
+  .streak-badge.bump { animation: bump 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
+  @keyframes bump { 0%,100%{transform:scale(1)} 50%{transform:scale(1.18) rotate(-3deg)} }
+  .s-icon { font-size: 1.4rem; }
+  .s-label,.s-suffix { font-size: 0.9rem; font-weight: 900; color:#fff; text-shadow:1px 1px 2px rgba(0,0,0,0.25); }
+  .s-num { font-size: 1.8rem; font-weight: 900; color:#fff; min-width:36px; text-align:center; }
+  .score-badge {
+    display: flex; align-items: center;
+    background: linear-gradient(135deg,#A78BFA,#7C3AED);
+    border-radius: 50px; padding: 8px 18px;
+    box-shadow: 0 4px 14px rgba(124,58,237,0.35);
+    border: 3px solid rgba(255,255,255,0.5);
+  }
+  .score-text { font-size: 0.95rem; font-weight: 900; color:#fff; }
+
+  /* ── Info card (consonant / vowel display) ── */
+  .info-strip {
+    display: flex; gap: 10px; margin-bottom: 14px;
+    max-width: 420px; width: 100%;
+  }
+  .info-chip {
+    flex: 1; background: #fff; border-radius: 14px;
+    padding: 10px 14px; text-align: center;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+  }
+  .chip-label { font-size: 0.72rem; color: #aaa; font-weight: 700; letter-spacing: 1px; }
+  .chip-char { font-size: 2.2rem; font-weight: 900; color: var(--blue); line-height: 1.2; }
+  .chip-name { font-size: 0.75rem; color: #888; margin-top: 2px; }
+
+  /* ── Question Card ── */
+  .question-card {
+    background: #fff; border-radius: 28px;
+    padding: 28px 36px 22px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    border: 4px solid #E8D5FF;
+    margin-bottom: 18px; text-align: center;
+    width: 100%; max-width: 420px;
+  }
+  .question-card.slide-in { animation: slideIn 0.38s cubic-bezier(0.175,0.885,0.32,1.275); }
+  @keyframes slideIn { 0%{transform:translateY(-18px) scale(0.95);opacity:0} 100%{transform:none;opacity:1} }
+
+  .q-label { font-size: 0.82rem; color: #bbb; font-weight: 700; margin-bottom: 10px; letter-spacing: 1px; }
+  .thai-syllable {
+    font-size: clamp(4rem,16vw,7rem); font-weight: 900;
+    color: var(--blue); line-height: 1.1;
+    animation: pop 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+  }
+  @keyframes pop { 0%{transform:scale(0) rotate(-20deg);opacity:0} 70%{transform:scale(1.12) rotate(4deg)} 100%{transform:scale(1) rotate(0)} }
+
+  .decompose {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; margin-top: 10px;
+  }
+  .dc-part {
+    background: #f5f0ff; border-radius: 10px; padding: 4px 12px;
+    font-size: 1.3rem; font-weight: 900; color: var(--purple);
+  }
+  .dc-plus { font-size: 1rem; color: #ccc; font-weight: 700; }
+
+  /* ── Answer Grid ── */
+  .answers-label { font-size: 0.9rem; color: #888; font-weight: 700; margin-bottom: 10px; text-align: center; }
+  .ans-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; max-width: 420px; width: 100%; margin-bottom: 18px;
+  }
+  .ans-btn {
+    border: none; border-radius: 16px; padding: 14px 10px;
+    font-size: clamp(1rem,3.5vw,1.3rem); font-weight: 900;
+    cursor: pointer; font-family: inherit; color: #fff;
+    box-shadow: 0 5px 0 rgba(0,0,0,0.18);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    transition: transform 0.12s, box-shadow 0.12s, opacity 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .ans-btn:not(:disabled):hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 0 rgba(0,0,0,0.18); }
+  .ans-btn:not(:disabled):active { transform: scale(0.93); box-shadow: 0 1px 0 rgba(0,0,0,0.15); }
+  .ans-btn:nth-child(1) { background: linear-gradient(135deg,#FF6B9D,#FF4757); }
+  .ans-btn:nth-child(2) { background: linear-gradient(135deg,#3D5AF1,#1A3AE0); }
+  .ans-btn:nth-child(3) { background: linear-gradient(135deg,#FF8C00,#E65100); }
+  .ans-btn:nth-child(4) { background: linear-gradient(135deg,#00C853,#1B5E20); }
+  .ans-btn.correct { background: linear-gradient(135deg,#00E676,#00C853) !important; animation: btnOK 0.45s cubic-bezier(0.175,0.885,0.32,1.275); }
+  @keyframes btnOK { 0%,100%{transform:scale(1)} 50%{transform:scale(1.25) rotate(-4deg)} }
+  .ans-btn.wrong { background: linear-gradient(135deg,#FF5252,#B71C1C) !important; animation: btnNG 0.4s ease; }
+  @keyframes btnNG { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+
+  /* ── Next btn ── */
+  #next-btn {
+    display: none; background: linear-gradient(135deg,#FF6B9D,#FF4757);
+    color: #fff; border: none; border-radius: 50px;
+    padding: 14px 44px; font-size: clamp(1rem,3vw,1.3rem);
+    font-weight: 900; cursor: pointer; font-family: inherit;
+    box-shadow: 0 6px 0 #B71C55, 0 10px 24px rgba(255,71,87,0.35);
+    margin-bottom: 16px; letter-spacing: 2px;
+    transition: transform 0.15s;
+  }
+  #next-btn.vis { display: inline-block; animation: nextIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
+  @keyframes nextIn { 0%{transform:scale(0) rotate(-10deg);opacity:0} 100%{transform:scale(1) rotate(0);opacity:1} }
+  #next-btn:hover { transform: translateY(-3px) scale(1.05); }
+
+  /* ── Hint panel ── */
+  .hint-box {
+    max-width: 420px; width: 100%;
+    background: #fff; border-radius: 18px;
+    padding: 14px 18px; margin-bottom: 14px;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.07);
+    border-left: 5px solid var(--purple);
+    display: none;
+  }
+  .hint-box.show { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+  .hint-title { font-size: 0.78rem; color: var(--purple); font-weight: 700; margin-bottom: 6px; }
+  .hint-content { font-size: 0.88rem; color: #555; line-height: 1.6; }
+
+  /* ── Confetti ── */
+  #cf-layer { position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;overflow:hidden; }
+  .cf { position:absolute;top:-30px;font-size:1.3rem;animation:cfFall linear forwards; }
+  @keyframes cfFall { 0%{opacity:1;transform:translateY(0) rotate(0)} 80%{opacity:1} 100%{opacity:0;transform:translateY(110vh) rotate(720deg) scale(0.4)} }
+  #big-badge { position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:7rem;pointer-events:none;z-index:9998;transition:transform 0.22s cubic-bezier(0.175,0.885,0.32,1.275); }
+  #big-badge.show { transform:translate(-50%,-50%) scale(1); }
+  #big-badge.hide { transform:translate(-50%,-50%) scale(0);transition:transform 0.16s ease-in; }
+
+  @media(max-width:380px) {
+    .ans-grid { grid-template-columns: 1fr 1fr; gap: 7px; }
+    .thai-syllable { font-size: 3.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div id="cf-layer"></div>
+<div id="big-badge"></div>
+
+<button id="lang-btn" onclick="toggleLang()">🇹🇭 ภาษาไทย</button>
+
+<div class="title-area">
+  <h1 id="title-h1">🇹🇭 泰文發音練習</h1>
+  <div class="subtitle" id="subtitle">選出正確的拼音！</div>
+</div>
+
+<div class="level-tabs">
+  <button class="level-btn lv1 active" id="btn-lv1" onclick="setLevel(1)">
+    <span id="lv1-label">🌱 初級</span>
+  </button>
+  <button class="level-btn lv2" id="btn-lv2" onclick="setLevel(2)">
+    <span id="lv2-label">🔥 中級</span>
+  </button>
+  <button class="level-btn lv3" id="btn-lv3" onclick="setLevel(3)">
+    <span id="lv3-label">⚡ 進階</span>
+  </button>
+</div>
+
+<div class="top-bar">
+  <div class="streak-badge" id="streak-badge">
+    <span class="s-icon">🔥</span>
+    <span class="s-label" id="s-label">連勝</span>
+    <span class="s-num" id="s-num">0</span>
+    <span class="s-suffix" id="s-suffix">次</span>
+  </div>
+  <div class="score-badge">
+    <span class="score-text" id="score-text">答對 0 / 0</span>
+  </div>
+</div>
+
+<div class="info-strip">
+  <div class="info-chip">
+    <div class="chip-label" id="chip-con-label">子音</div>
+    <div class="chip-char" id="chip-con">ก</div>
+    <div class="chip-name" id="chip-con-name">ก ไก่</div>
+  </div>
+  <div class="info-chip">
+    <div class="chip-label" id="chip-vow-label">母音</div>
+    <div class="chip-char" id="chip-vow">า</div>
+    <div class="chip-name" id="chip-vow-name">สระ อา</div>
+  </div>
+</div>
+
+<div class="question-card" id="question-card">
+  <div class="q-label" id="q-label">這個音節怎麼唸？</div>
+  <div class="thai-syllable" id="thai-syllable">กา</div>
+  <div class="decompose" id="decompose">
+    <div class="dc-part" id="dc-con">ก</div>
+    <div class="dc-plus">＋</div>
+    <div class="dc-part" id="dc-vow">า</div>
+  </div>
+</div>
+
+<div class="answers-label" id="answers-label">👇 選擇正確的發音</div>
+<div class="ans-grid" id="ans-grid"></div>
+
+<button id="next-btn" onclick="nextQ()">✨ 下一題 ➡️</button>
+
+<div class="hint-box" id="hint-box">
+  <div class="hint-title" id="hint-title">💡 提示</div>
+  <div class="hint-content" id="hint-content"></div>
+</div>
+
+<script>
+// ── Language ──────────────────────────────────────────────────
+const L = {
+  zh: {
+    title: '🇹🇭 泰文發音練習', subtitle: '選出正確的拼音！',
+    lv1: '🌱 初級', lv2: '🔥 中級', lv3: '⚡ 進階',
+    streakLabel: '連勝', streakSuffix: '次',
+    score: (c,t) => `答對 ${c} / ${t}`,
+    qLabel: '這個音節怎麼唸？', ansLabel: '👇 選擇正確的發音',
+    nextBtn: '✨ 下一題 ➡️', hintTitle: '💡 提示',
+    conLabel: '子音', vowLabel: '母音',
+    langBtn: '🇹🇭 ภาษาไทย',
+    correct: ['答對了！🎉','完全正確！✨','太棒了！🌟','好厲害！🏆','完美！🎊','繼續加油！💪'],
+    wrong:   ['再試試看！💪','很接近了！😊','不對喔，繼續！🌈','加油！再想想！✨'],
+    streakSuper: n => `🔥 連勝 ${n} 次！泰文達人！👑`,
+    streakGood:  n => `⚡ 連勝 ${n} 次！好厲害！🌟`,
+  },
+  th: {
+    title: '🇹🇭 ฝึกออกเสียงภาษาไทย', subtitle: 'เลือกคำออกเสียงที่ถูกต้อง!',
+    lv1: '🌱 ง่าย', lv2: '🔥 กลาง', lv3: '⚡ ยาก',
+    streakLabel: 'ต่อเนื่อง', streakSuffix: 'ครั้ง',
+    score: (c,t) => `ถูก ${c} / ${t}`,
+    qLabel: 'อ่านอย่างไร?', ansLabel: '👇 เลือกคำออกเสียง',
+    nextBtn: '✨ ต่อไป ➡️', hintTitle: '💡 คำใบ้',
+    conLabel: 'พยัญชนะ', vowLabel: 'สระ',
+    langBtn: '🇹🇼 繁體中文',
+    correct: ['ถูกต้อง! 🎉','เก่งมาก! ✨','ยอดเยี่ยม! 🌟','เก่งจริงๆ! 🏆'],
+    wrong:   ['ลองใหม่! 💪','ใกล้แล้ว! 😊','ยังไม่ถูก ลองต่อ! 🌈'],
+    streakSuper: n => `🔥 ต่อเนื่อง ${n} ครั้ง! เก่งมาก! 👑`,
+    streakGood:  n => `⚡ ต่อเนื่อง ${n} ครั้ง! 🌟`,
+  }
+};
+let lang = 'zh';
+function toggleLang() {
+  lang = lang === 'zh' ? 'th' : 'zh';
+  applyLang(); updateUI();
+}
+function applyLang() {
+  const l = L[lang];
+  document.getElementById('title-h1').textContent = l.title;
+  document.getElementById('subtitle').textContent = l.subtitle;
+  document.getElementById('lv1-label').textContent = l.lv1;
+  document.getElementById('lv2-label').textContent = l.lv2;
+  document.getElementById('lv3-label').textContent = l.lv3;
+  document.getElementById('s-label').textContent = l.streakLabel;
+  document.getElementById('s-suffix').textContent = l.streakSuffix;
+  document.getElementById('q-label').textContent = l.qLabel;
+  document.getElementById('answers-label').textContent = l.ansLabel;
+  document.getElementById('next-btn').textContent = l.nextBtn;
+  document.getElementById('hint-title').textContent = l.hintTitle;
+  document.getElementById('chip-con-label').textContent = l.conLabel;
+  document.getElementById('chip-vow-label').textContent = l.vowLabel;
+  document.getElementById('lang-btn').textContent = l.langBtn;
+}
+
+// ── Data ──────────────────────────────────────────────────────
+const CONSONANTS = [
+  // [char, roman, class, name_th, tip_zh]
+  ['ก','k','mid','ก ไก่','發音類似 k，不送氣'],
+  ['ข','kh','high','ข ไข่','發音類似 k，送氣'],
+  ['ค','kh','low','ค ควาย','發音類似 k，送氣（低調）'],
+  ['จ','j','mid','จ จาน','發音類似 j'],
+  ['ช','ch','low','ช ช้าง','發音類似 ch，送氣'],
+  ['ด','d','mid','ด เด็ก','發音類似 d'],
+  ['ต','t','mid','ต เต่า','發音類似 t，不送氣'],
+  ['ถ','th','high','ถ ถุง','發音類似 t，送氣'],
+  ['ท','th','low','ท ทหาร','發音類似 t，送氣（低調）'],
+  ['น','n','low','น หนู','發音類似 n'],
+  ['บ','b','mid','บ ใบไม้','發音類似 b'],
+  ['ป','p','mid','ป ปลา','發音類似 p，不送氣'],
+  ['ผ','ph','high','ผ ผึ้ง','發音類似 p，送氣'],
+  ['พ','ph','low','พ พาน','發音類似 p，送氣（低調）'],
+  ['ม','m','low','ม ม้า','發音類似 m'],
+  ['ร','r','low','ร เรือ','發音類似 r（捲舌）'],
+  ['ล','l','low','ล ลิง','發音類似 l'],
+  ['ว','w','low','ว แหวน','發音類似 w'],
+  ['ส','s','high','ส เสือ','發音類似 s'],
+  ['ห','h','high','ห หีบ','發音類似 h'],
+  ['อ','–','mid','อ อ่าง','聲門塞音（無輔音）'],
+];
+
+const VOWELS = [
+  // [display_fn(c), roman, name_th, tip_zh]
+  [c => c + 'า',  'aa', 'สระ อา', '長 a 音，如「啊～」'],
+  [c => c + 'ะ',  'a',  'สระ อะ', '短 a 音，如快速的「ㄚ」'],
+  [c => c + 'ิ',  'i',  'สระ อิ', '短 i 音，如「衣」'],
+  [c => c + 'ี',  'ii', 'สระ อี', '長 i 音，如「伊～」'],
+  [c => c + 'ุ',  'u',  'สระ อุ', '短 u 音，如「污」'],
+  [c => c + 'ู',  'uu', 'สระ อู', '長 u 音，如「屋～」'],
+  [c => 'เ' + c,  'ee', 'สระ เอ', '類似英文 "say" 中的 ay'],
+  [c => 'แ' + c,  'ae', 'สระ แอ', '類似英文 "cat" 中的 a'],
+  [c => 'โ' + c,  'oo', 'สระ โอ', '類似英文 "go" 中的 o'],
+  [c => c + 'อ',  'o',  'สระ อ',  '短 o 音，如「喔」'],
+  [c => 'เ' + c + 'า', 'ao', 'สระ เอา', '複合母音，如「澳」'],
+  [c => 'เ' + c + 'ีย', 'ia', 'สระ เอีย', '複合母音 ia'],
+];
+
+// Levels
+const LEVELS = {
+  1: { cons: [0,3,5,6,9,10,14], vows: [0,2,3,4,5] },      // ก จ ด ต น บ ม + า ิ ี ุ ู
+  2: { cons: [0,1,3,5,6,7,9,10,12,14,16,18], vows: [0,1,2,3,4,5,6,7,8] }, // + เ- แ- โ-
+  3: { cons: Array.from({length:21},(_,i)=>i), vows: Array.from({length:12},(_,i)=>i) },
+};
+
+let level = 1;
+let streak = 0, totalQ = 0, totalC = 0;
+let curCon, curVow, answered;
+
+function setLevel(lv) {
+  level = lv;
+  [1,2,3].forEach(n => {
+    document.getElementById('btn-lv' + n).classList.toggle('active', n === lv);
+  });
+  streak = 0; totalQ = 0; totalC = 0;
+  updateUI();
+  newQ();
+}
+
+function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function rnd(arr) { return pickRandom(arr); }
+
+function newQ() {
+  answered = false;
+  const lv = LEVELS[level];
+  const conIdx = pickRandom(lv.cons);
+  const vowIdx = pickRandom(lv.vows);
+  curCon = CONSONANTS[conIdx];
+  curVow = VOWELS[vowIdx];
+
+  // Info chips
+  const vowForm = curVow[0](curCon[0]).replace(curCon[0], curCon[0] === 'อ' ? '' : '').trim();
+  const displayVowForm = curVow[0]('□').replace('□','');
+  document.getElementById('chip-con').textContent = curCon[0];
+  document.getElementById('chip-con-name').textContent = curCon[3];
+  document.getElementById('chip-vow').textContent = displayVowForm || curVow[0]('').replace('','') || curVow[2].replace('สระ ','');
+  document.getElementById('chip-vow-name').textContent = curVow[2];
+
+  // Question card
+  const card = document.getElementById('question-card');
+  card.classList.remove('slide-in');
+  void card.offsetWidth;
+  card.classList.add('slide-in');
+
+  const syllable = curVow[0](curCon[0]);
+  document.getElementById('thai-syllable').textContent = syllable;
+  document.getElementById('dc-con').textContent = curCon[0];
+  document.getElementById('dc-vow').textContent = displayVowForm || curVow[2].replace('สระ ','');
+
+  // Hide hint
+  document.getElementById('hint-box').classList.remove('show');
+
+  // Build answers
+  buildAnswers();
+  document.getElementById('next-btn').className = '';
+}
+
+function buildAnswers() {
+  const correct = curCon[1] + curVow[1]; // e.g. "k" + "aa" = "kaa"
+  const lv = LEVELS[level];
+  const pool = new Set();
+  pool.add(correct);
+
+  // Generate wrong answers from other cons/vows combos
+  let attempts = 0;
+  while (pool.size < 4 && attempts < 200) {
+    attempts++;
+    const wc = CONSONANTS[pickRandom(lv.cons)];
+    const wv = VOWELS[pickRandom(lv.vows)];
+    const w = wc[1] + wv[1];
+    if (w !== correct) pool.add(w);
+  }
+  // fallback: add some fixed wrong answers
+  ['ka','kii','maa','nuu','baa','jii','duu','paa'].forEach(w => {
+    if (pool.size < 4 && w !== correct) pool.add(w);
+  });
+
+  const opts = [...pool].sort(() => Math.random() - 0.5).slice(0,4);
+  // ensure correct is in opts
+  if (!opts.includes(correct)) { opts[Math.floor(Math.random()*4)] = correct; }
+
+  const grid = document.getElementById('ans-grid');
+  grid.innerHTML = '';
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'ans-btn';
+    btn.textContent = opt;
+    btn.addEventListener('click', () => onAnswer(opt, btn));
+    grid.appendChild(btn);
+  });
+}
+
+function onAnswer(chosen, btn) {
+  if (answered) return;
+  answered = true;
+  totalQ++;
+  const correct = curCon[1] + curVow[1];
+
+  if (chosen === correct) {
+    totalC++; streak++;
+    btn.classList.add('correct');
+    document.querySelectorAll('.ans-btn').forEach(b => { if(b!==btn){b.disabled=true;b.style.opacity='0.35';} });
+    const l = L[lang];
+    if (streak >= 5 && streak % 5 === 0) {
+      launchConfetti(50); showBadge('🏆');
+      showBubble(l.streakSuper(streak));
+    } else if (streak >= 3 && streak % 3 === 0) {
+      launchConfetti(28); showBadge('🎊');
+      showBubble(l.streakGood(streak));
+    } else {
+      launchConfetti(14); showBadge('✅');
+      showBubble(rnd(l.correct));
+    }
+  } else {
+    streak = 0;
+    btn.classList.add('wrong');
+    btn.disabled = true; btn.style.opacity = '0.4';
+    // highlight correct
+    document.querySelectorAll('.ans-btn').forEach(b => {
+      if (b.textContent === correct) { b.classList.add('correct'); }
+    });
+    showBadge('❌');
+    const l = L[lang];
+    showBubble(rnd(l.wrong));
+    // show hint
+    showHint();
+  }
+
+  updateUI();
+  setTimeout(() => { document.getElementById('next-btn').className = 'vis'; }, 700);
+}
+
+function showHint() {
+  const box = document.getElementById('hint-box');
+  const l = L[lang];
+  document.getElementById('hint-content').innerHTML =
+    `<b>${curCon[0]}</b> = ${curCon[1]} (${curCon[3]})<br>` +
+    `<b>${curVow[2]}</b> = ${curVow[1]} → ${lang === 'zh' ? curVow[3] : curVow[2]}<br>` +
+    `答案：<b style="color:#9B59B6;font-size:1.1em">${curCon[1] + curVow[1]}</b>`;
+  box.classList.add('show');
+}
+
+function updateUI() {
+  const l = L[lang];
+  document.getElementById('s-num').textContent = streak;
+  document.getElementById('score-text').textContent = l.score(totalC, totalQ);
+  const badge = document.getElementById('streak-badge');
+  badge.classList.remove('bump'); void badge.offsetWidth; badge.classList.add('bump');
+  const icon = badge.querySelector('.s-icon');
+  icon.textContent = streak >= 5 ? '🔥' : streak >= 3 ? '⚡' : '🏅';
+}
+
+function nextQ() { newQ(); }
+
+// Bubble (re-use question card subtitle area briefly)
+function showBubble(msg) {
+  const el = document.getElementById('subtitle');
+  el.textContent = msg;
+  setTimeout(() => { el.textContent = L[lang].subtitle; }, 2200);
+}
+
+function launchConfetti(n) {
+  const layer = document.getElementById('cf-layer');
+  layer.innerHTML = '';
+  const em = ['🌟','⭐','🎉','🎊','✨','🌈','💫','🎈','🎀','🍭'];
+  for (let i=0;i<n;i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'cf';
+      el.textContent = em[Math.floor(Math.random()*em.length)];
+      el.style.left = (Math.random()*105-5)+'vw';
+      el.style.fontSize = (1+Math.random()*1.4)+'rem';
+      const dur = 1.6+Math.random()*2.2;
+      el.style.animation = `cfFall ${dur}s linear forwards`;
+      layer.appendChild(el);
+      setTimeout(()=>el.remove(), dur*1000+100);
+    }, Math.random()*500);
+  }
+}
+function showBadge(e) {
+  const el = document.getElementById('big-badge');
+  el.textContent = e; el.className='show';
+  setTimeout(()=>{el.className='hide';},600);
+}
+
+// Init
+applyLang();
+newQ();
+</script>
+</body>
+</html>
