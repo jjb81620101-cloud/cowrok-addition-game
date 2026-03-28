@@ -336,6 +336,7 @@ function speakSyllable() { speakThai(qCurVow[0](qCurCon[0]), 'q-speaker-btn'); }
 //  LANGUAGE
 // ══════════════════════════════════════════
 const L = {
+  subtitle: 'ฟังเสียง แล้วเลือกพยางค์!',
   score:(c,t)=>`ถูก ${c} / ${t}`,
   revealCorrect: s=>`✅ คำตอบ：<span>${s}</span>`,
   correct:['ถูกต้อง! 🎉','เก่งมาก! ✨','ยอดเยี่ยม! 🌟','เก่งจริงๆ! 🏆'],
@@ -587,11 +588,7 @@ function tryMatch() {
 
     mSelVow = null; mSelCon = null;
     updateScoreUI();
-
-    // Show fixed next button overlay
-    setTimeout(() => {
-      document.getElementById('m-next-overlay').style.display = 'block';
-    }, 700);
+    document.getElementById('m-next-overlay').style.display = 'block';
   } else {
     // Wrong
     streak = 0; updateScoreUI();
@@ -664,10 +661,6 @@ function clearMatchLines() {
   document.getElementById('match-svg').innerHTML = '';
 }
 
-function showMatchComplete() {
-  launchConfetti(60);
-  document.getElementById('match-complete').classList.add('show');
-}
 
 // ══════════════════════════════════════════
 //  CONFETTI & BADGE
