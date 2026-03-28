@@ -239,10 +239,6 @@ body {
 <div id="cf-layer"></div>
 <div id="big-badge"></div>
 
-<!-- Fixed next button for match mode -->
-<div id="m-next-overlay" style="display:none;position:fixed;bottom:0;left:0;width:100%;padding:16px 20px 28px;background:linear-gradient(to top,rgba(255,255,255,0.97) 70%,transparent);z-index:200;text-align:center;">
-  <button onclick="initMatchRound()" style="background:linear-gradient(135deg,#FF6B9D,#FF4757);color:#fff;border:none;border-radius:50px;padding:16px 56px;font-size:1.2rem;font-weight:900;cursor:pointer;font-family:inherit;box-shadow:0 6px 0 #B71C55,0 10px 24px rgba(255,71,87,0.4);letter-spacing:2px;width:100%;max-width:340px;">✨ ต่อไป ➡️</button>
-</div>
 
 <div class="title-area">
   <h1 id="title-h1">🇹🇭 ฝึกฟังภาษาไทย</h1>
@@ -375,7 +371,6 @@ function setMode(mode) {
   currentMode = mode;
   document.getElementById('quiz-mode').style.display = mode === 'quiz' ? 'flex' : 'none';
   document.getElementById('match-mode').style.display = mode === 'match' ? 'flex' : 'none';
-  document.getElementById('m-next-overlay').style.display = 'none';
   document.getElementById('tab-quiz').classList.toggle('active', mode === 'quiz');
   document.getElementById('tab-match').classList.toggle('active', mode === 'match');
   if (mode === 'quiz') quizNewQ();
@@ -479,7 +474,6 @@ let mMatchedCount = 0;
 let mCurrentPairIdx = 0; // which pair's audio is currently playing
 
 function initMatchRound() {
-  document.getElementById('m-next-overlay').style.display = 'none';
   mPairs = [];
   const usedC = new Set(), usedV = new Set();
   let attempts = 0;
@@ -588,7 +582,7 @@ function tryMatch() {
 
     mSelVow = null; mSelCon = null;
     updateScoreUI();
-    document.getElementById('m-next-overlay').style.display = 'block';
+    setTimeout(() => initMatchRound(), 1000);
   } else {
     // Wrong
     streak = 0; updateScoreUI();
