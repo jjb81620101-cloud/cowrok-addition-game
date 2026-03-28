@@ -240,8 +240,8 @@ body {
 <div id="big-badge"></div>
 
 <div class="title-area">
-  <h1 id="title-h1">🇹🇭 泰文聽力練習</h1>
-  <div class="subtitle" id="subtitle">聽聲音，選正確的泰文字！</div>
+  <h1 id="title-h1">🇹🇭 ฝึกฟังภาษาไทย</h1>
+  <div class="subtitle" id="subtitle">ฟังเสียง แล้วเลือกพยางค์!</div>
 </div>
 
 <!-- Mode tabs -->
@@ -254,9 +254,9 @@ body {
 <div class="top-bar">
   <div class="streak-badge" id="streak-badge">
     <span class="s-icon">🏅</span>
-    <span class="s-label" id="s-label">連勝</span>
+    <span class="s-label" id="s-label">ต่อเนื่อง</span>
     <span class="s-num" id="s-num">0</span>
-    <span class="s-suffix" id="s-suffix">次</span>
+    <span class="s-suffix" id="s-suffix">ครั้ง</span>
   </div>
   <div class="score-badge">
     <span class="score-text" id="score-text">ถูก 0 / 0</span>
@@ -266,16 +266,16 @@ body {
 <!-- ─── QUIZ MODE ─── -->
 <div id="quiz-mode">
   <div class="speaker-card">
-    <div class="q-label" id="q-label">聽聲音，選正確的泰文音節</div>
+    <div class="q-label" id="q-label">ฟังเสียง แล้วเลือกพยางค์</div>
     <button class="speaker-btn" id="q-speaker-btn" onclick="speakSyllable()">🔊</button>
-    <div class="replay-label" id="replay-label">點擊重播</div>
+    <div class="replay-label" id="replay-label">แตะเพื่อเล่นซ้ำ</div>
   </div>
-  <div class="ans-label" id="ans-label">👇 選擇正確的泰文字</div>
+  <div class="ans-label" id="ans-label">👇 เลือกพยางค์ภาษาไทย</div>
   <div class="ans-grid" id="ans-grid"></div>
   <div class="reveal-label" id="reveal-label"></div>
-  <button id="q-next-btn" onclick="quizNextQ()">✨ 下一題 ➡️</button>
+  <button id="q-next-btn" onclick="quizNextQ()">✨ ต่อไป ➡️</button>
   <div class="hint-box" id="hint-box">
-    <div class="hint-title" id="hint-title">💡 提示</div>
+    <div class="hint-title" id="hint-title">💡 คำใบ้</div>
     <div class="hint-row" id="hint-content"></div>
   </div>
 </div>
@@ -286,7 +286,7 @@ body {
   <div class="match-audio-bar">
     <button class="speaker-btn" id="m-speaker-btn" onclick="replayMatchAudio()">🔊</button>
     <div class="match-audio-info">
-      <div class="match-audio-label" id="m-audio-label">點擊喇叭聽聲音</div>
+      <div class="match-audio-label" id="m-audio-label">แตะลำโพงเพื่อฟัง</div>
       <div class="match-audio-syllable" id="m-audio-syllable">???</div>
     </div>
   </div>
@@ -298,7 +298,7 @@ body {
     <svg class="match-svg-layer" id="match-svg"></svg>
     <!-- Vowel row (top) -->
     <div class="tile-row" id="vow-row"></div>
-    <div class="match-divider" id="match-divider">拉線配對</div>
+    <div class="match-divider" id="match-divider">แตะเพื่อจับคู่</div>
     <!-- Consonant row (bottom) -->
     <div class="tile-row" id="con-row"></div>
   </div>
@@ -338,61 +338,14 @@ function speakSyllable() { speakThai(qCurVow[0](qCurCon[0]), 'q-speaker-btn'); }
 //  LANGUAGE
 // ══════════════════════════════════════════
 const L = {
-  zh: {
-    title:'🇹🇭 泰文聽力練習', subtitle:'聽聲音，選正確的泰文字！',
-    streakLabel:'連勝', streakSuffix:'次',
-    score:(c,t)=>`答對 ${c} / ${t}`,
-    qLabel:'聽聲音，選正確的泰文音節', ansLabel:'👇 選擇正確的泰文字',
-    replayLabel:'點擊重播', nextBtn:'✨ 下一題 ➡️', hintTitle:'💡 提示',
-    tabQuiz:'🎯 選擇題', tabMatch:'🔗 連連看',
-    mAudioLabel:'點擊喇叭聽聲音', mProgress:(m,t)=>`配對 ${m} / ${t}`,
-    mDivider:'拉線配對', mCompleteMsg:'全部配對完成！', mCompleteDetail:'太厲害了！繼續下一關',
-    mNextRound:'🔄 下一關',
-    langBtn:'🇹🇭 ภาษาไทย',
-    revealCorrect: s=>`✅ 正確答案：<span>${s}</span>`,
-    correct:['答對了！🎉','完全正確！✨','太棒了！🌟','好厲害！🏆','完美！🎊'],
-    wrong:['再試試！💪','很接近了！😊','不對喔繼續！🌈','加油！✨'],
-    streakSuper: n=>`🔥 連勝 ${n} 次！泰文達人！👑`,
-    streakGood:  n=>`⚡ 連勝 ${n} 次！好厲害！🌟`,
-  },
-  th: {
-    title:'🇹🇭 ฝึกฟังภาษาไทย', subtitle:'ฟังเสียง แล้วเลือกพยางค์!',
-    streakLabel:'ต่อเนื่อง', streakSuffix:'ครั้ง',
-    score:(c,t)=>`ถูก ${c} / ${t}`,
-    qLabel:'ฟังเสียง แล้วเลือกพยางค์', ansLabel:'👇 เลือกพยางค์ภาษาไทย',
-    replayLabel:'แตะเพื่อเล่นซ้ำ', nextBtn:'✨ ต่อไป ➡️', hintTitle:'💡 คำใบ้',
-    tabQuiz:'🎯 เลือกตอบ', tabMatch:'🔗 จับคู่',
-    mAudioLabel:'แตะลำโพงเพื่อฟัง', mProgress:(m,t)=>`จับคู่ ${m} / ${t}`,
-    mDivider:'ลากเส้นจับคู่', mCompleteMsg:'จับคู่ครบแล้ว！', mCompleteDetail:'เก่งมาก！ไปต่อ',
-    mNextRound:'🔄 รอบต่อไป',
-    langBtn:'🇹🇼 繁體中文',
-    revealCorrect: s=>`✅ คำตอบ：<span>${s}</span>`,
-    correct:['ถูกต้อง! 🎉','เก่งมาก! ✨','ยอดเยี่ยม! 🌟'],
-    wrong:['ลองใหม่! 💪','ใกล้แล้ว! 😊','ยังไม่ถูก! 🌈'],
-    streakSuper: n=>`🔥 ต่อเนื่อง ${n} ครั้ง! 👑`,
-    streakGood:  n=>`⚡ ต่อเนื่อง ${n} ครั้ง! 🌟`,
-  }
+  score:(c,t)=>`ถูก ${c} / ${t}`,
+  revealCorrect: s=>`✅ คำตอบ：<span>${s}</span>`,
+  correct:['ถูกต้อง! 🎉','เก่งมาก! ✨','ยอดเยี่ยม! 🌟','เก่งจริงๆ! 🏆'],
+  wrong:['ลองใหม่! 💪','ใกล้แล้ว! 😊','ยังไม่ถูก! 🌈'],
+  streakSuper: n=>`🔥 ต่อเนื่อง ${n} ครั้ง! 👑`,
+  streakGood:  n=>`⚡ ต่อเนื่อง ${n} ครั้ง! 🌟`,
 };
-let lang = 'th';
-function applyLang() {
-  const l = L[lang];
-  document.getElementById('title-h1').textContent = l.title;
-  document.getElementById('subtitle').textContent = l.subtitle;
-  document.getElementById('s-label').textContent = l.streakLabel;
-  document.getElementById('s-suffix').textContent = l.streakSuffix;
-  document.getElementById('q-label').textContent = l.qLabel;
-  document.getElementById('ans-label').textContent = l.ansLabel;
-  document.getElementById('replay-label').textContent = l.replayLabel;
-  document.getElementById('q-next-btn').textContent = l.nextBtn;
-  document.getElementById('hint-title').textContent = l.hintTitle;
-  document.getElementById('lang-btn').textContent = l.langBtn;
-  document.getElementById('tab-quiz').textContent = l.tabQuiz;
-  document.getElementById('tab-match').textContent = l.tabMatch;
-  document.getElementById('m-audio-label').textContent = l.mAudioLabel;
-  document.getElementById('match-divider').textContent = l.mDivider;
-  document.getElementById('m-complete-msg').textContent = l.mCompleteMsg;
-  document.getElementById('m-complete-detail').textContent = l.mCompleteDetail;
-}
+function applyLang() {}
 
 // ══════════════════════════════════════════
 //  DATA
@@ -434,7 +387,7 @@ function setMode(mode) {
 // ══════════════════════════════════════════
 let streak = 0, totalQ = 0, totalC = 0;
 function updateScoreUI() {
-  const l = L[lang];
+  const l = L;
   document.getElementById('s-num').textContent = streak;
   document.getElementById('score-text').textContent = l.score(totalC, totalQ);
   const badge = document.getElementById('streak-badge');
@@ -444,7 +397,7 @@ function updateScoreUI() {
 function showBubble(msg) {
   const el = document.getElementById('subtitle');
   el.textContent = msg;
-  setTimeout(() => { el.textContent = L[lang].subtitle; }, 2200);
+  setTimeout(() => { el.textContent = L.subtitle; }, 2200);
 }
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
@@ -490,7 +443,7 @@ function quizOnAnswer(chosen, btn) {
   if (qAnswered) return;
   qAnswered = true; totalQ++;
   const correct = qCurVow[0](qCurCon[0]);
-  const l = L[lang];
+  const l = L;
 
   if (chosen === correct) {
     totalC++; streak++;
@@ -629,7 +582,7 @@ function tryMatch() {
     showMatchAudioInfo(vPairIdx, true);
 
     launchConfetti(16); showBadge('✅');
-    const l = L[lang];
+    const l = L;
     if (streak >= 5 && streak % 5 === 0) showBubble(l.streakSuper(streak));
     else if (streak >= 3 && streak % 3 === 0) showBubble(l.streakGood(streak));
     else showBubble(pick(l.correct));
@@ -645,7 +598,7 @@ function tryMatch() {
     const vTile = document.getElementById('vow-' + mSelVow);
     const cTile = document.getElementById('con-' + mSelCon);
     vTile.classList.add('wrong-flash'); cTile.classList.add('wrong-flash');
-    showBadge('❌'); showBubble(pick(L[lang].wrong));
+    showBadge('❌'); showBubble(pick(L.wrong));
     setTimeout(() => {
       vTile.classList.remove('wrong-flash', 'selected');
       cTile.classList.remove('wrong-flash', 'selected');
@@ -677,7 +630,7 @@ function replayMatchAudio() {
 }
 
 function updateMatchProgress() {
-  const l = L[lang];
+  const l = L;
   document.getElementById('m-matched').textContent = mMatchedCount;
   document.getElementById('match-progress').innerHTML = l.mProgress(mMatchedCount, 4);
 }
