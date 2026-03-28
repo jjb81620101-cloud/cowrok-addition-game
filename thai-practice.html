@@ -107,9 +107,10 @@
 
   .q-label { font-size: 0.82rem; color: #bbb; font-weight: 700; margin-bottom: 10px; letter-spacing: 1px; }
   .thai-syllable {
-    font-size: clamp(4rem,16vw,7rem); font-weight: 900;
-    color: var(--blue); line-height: 1.1;
+    font-size: clamp(2.6rem,12vw,5rem); font-weight: 900;
+    color: var(--blue); line-height: 1.1; letter-spacing: 3px;
     animation: pop 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+    font-family: 'Courier New', monospace;
   }
   @keyframes pop { 0%{transform:scale(0) rotate(-20deg);opacity:0} 70%{transform:scale(1.12) rotate(4deg)} 100%{transform:scale(1) rotate(0)} }
 
@@ -131,7 +132,7 @@
   }
   .ans-btn {
     border: none; border-radius: 16px; padding: 14px 10px;
-    font-size: clamp(1rem,3.5vw,1.3rem); font-weight: 900;
+    font-size: clamp(1.6rem,6vw,2.4rem); font-weight: 900;
     cursor: pointer; font-family: inherit; color: #fff;
     box-shadow: 0 5px 0 rgba(0,0,0,0.18);
     text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
@@ -264,11 +265,11 @@
 // ── Language ──────────────────────────────────────────────────
 const L = {
   zh: {
-    title: '🇹🇭 泰文發音練習', subtitle: '選出正確的拼音！',
+    title: '🇹🇭 泰文發音練習', subtitle: '選出正確的泰文音節！',
     lv1: '🌱 初級', lv2: '🔥 中級', lv3: '⚡ 進階',
     streakLabel: '連勝', streakSuffix: '次',
     score: (c,t) => `答對 ${c} / ${t}`,
-    qLabel: '這個音節怎麼唸？', ansLabel: '👇 選擇正確的發音',
+    qLabel: '這個拼音對應哪個音節？', ansLabel: '👇 選擇正確的泰文音節',
     nextBtn: '✨ 下一題 ➡️', hintTitle: '💡 提示',
     conLabel: '子音', vowLabel: '母音',
     langBtn: '🇹🇭 ภาษาไทย',
@@ -278,11 +279,11 @@ const L = {
     streakGood:  n => `⚡ 連勝 ${n} 次！好厲害！🌟`,
   },
   th: {
-    title: '🇹🇭 ฝึกออกเสียงภาษาไทย', subtitle: 'เลือกคำออกเสียงที่ถูกต้อง!',
+    title: '🇹🇭 ฝึกออกเสียงภาษาไทย', subtitle: 'เลือกพยางค์ไทยที่ถูกต้อง!',
     lv1: '🌱 ง่าย', lv2: '🔥 กลาง', lv3: '⚡ ยาก',
     streakLabel: 'ต่อเนื่อง', streakSuffix: 'ครั้ง',
     score: (c,t) => `ถูก ${c} / ${t}`,
-    qLabel: 'อ่านอย่างไร?', ansLabel: '👇 เลือกคำออกเสียง',
+    qLabel: 'เสียงนี้ตรงกับพยางค์ใด?', ansLabel: '👇 เลือกพยางค์ภาษาไทย',
     nextBtn: '✨ ต่อไป ➡️', hintTitle: '💡 คำใบ้',
     conLabel: 'พยัญชนะ', vowLabel: 'สระ',
     langBtn: '🇹🇼 繁體中文',
@@ -397,16 +398,16 @@ function newQ() {
   document.getElementById('chip-vow').textContent = displayVowForm || curVow[0]('').replace('','') || curVow[2].replace('สระ ','');
   document.getElementById('chip-vow-name').textContent = curVow[2];
 
-  // Question card
+  // Question card — show romanization as question
   const card = document.getElementById('question-card');
   card.classList.remove('slide-in');
   void card.offsetWidth;
   card.classList.add('slide-in');
 
-  const syllable = curVow[0](curCon[0]);
-  document.getElementById('thai-syllable').textContent = syllable;
-  document.getElementById('dc-con').textContent = curCon[0];
-  document.getElementById('dc-vow').textContent = displayVowForm || curVow[2].replace('สระ ','');
+  const roman = curCon[1] + curVow[1];
+  document.getElementById('thai-syllable').textContent = roman;
+  document.getElementById('dc-con').textContent = curCon[1];
+  document.getElementById('dc-vow').textContent = curVow[1];
 
   // Hide hint
   document.getElementById('hint-box').classList.remove('show');
@@ -417,27 +418,30 @@ function newQ() {
 }
 
 function buildAnswers() {
-  const correct = curCon[1] + curVow[1]; // e.g. "k" + "aa" = "kaa"
+  // Options are Thai syllables; correct = curVow[0](curCon[0])
+  const correct = curVow[0](curCon[0]);
   const lv = LEVELS[level];
   const pool = new Set();
   pool.add(correct);
 
-  // Generate wrong answers from other cons/vows combos
+  // Generate wrong Thai syllable combinations
   let attempts = 0;
   while (pool.size < 4 && attempts < 200) {
     attempts++;
     const wc = CONSONANTS[pickRandom(lv.cons)];
     const wv = VOWELS[pickRandom(lv.vows)];
-    const w = wc[1] + wv[1];
+    const w = wv[0](wc[0]);
     if (w !== correct) pool.add(w);
   }
-  // fallback: add some fixed wrong answers
-  ['ka','kii','maa','nuu','baa','jii','duu','paa'].forEach(w => {
+  // fallback with fixed syllables
+  [['ก','า'],['น','า'],['ม','า'],['บ','ี'],['ด','ู'],['ต','ะ']].forEach(([c,v]) => {
+    const s = VOWELS.find(vv => vv[0](c).includes(v)) || null;
+    if (!s) return;
+    const w = s[0](c);
     if (pool.size < 4 && w !== correct) pool.add(w);
   });
 
   const opts = [...pool].sort(() => Math.random() - 0.5).slice(0,4);
-  // ensure correct is in opts
   if (!opts.includes(correct)) { opts[Math.floor(Math.random()*4)] = correct; }
 
   const grid = document.getElementById('ans-grid');
@@ -455,7 +459,7 @@ function onAnswer(chosen, btn) {
   if (answered) return;
   answered = true;
   totalQ++;
-  const correct = curCon[1] + curVow[1];
+  const correct = curVow[0](curCon[0]);
 
   if (chosen === correct) {
     totalC++; streak++;
@@ -493,11 +497,10 @@ function onAnswer(chosen, btn) {
 
 function showHint() {
   const box = document.getElementById('hint-box');
-  const l = L[lang];
   document.getElementById('hint-content').innerHTML =
-    `<b>${curCon[0]}</b> = ${curCon[1]} (${curCon[3]})<br>` +
-    `<b>${curVow[2]}</b> = ${curVow[1]} → ${lang === 'zh' ? curVow[3] : curVow[2]}<br>` +
-    `答案：<b style="color:#9B59B6;font-size:1.1em">${curCon[1] + curVow[1]}</b>`;
+    `<b>${curCon[1]}</b> ← ${curCon[0]} (${curCon[3]})<br>` +
+    `<b>${curVow[1]}</b> ← ${curVow[2]}${lang === 'zh' ? '：' + curVow[3] : ''}<br>` +
+    `${lang === 'zh' ? '答案' : 'คำตอบ'}：<b style="color:#9B59B6;font-size:1.4em">${curVow[0](curCon[0])}</b>`;
   box.classList.add('show');
 }
 
