@@ -362,6 +362,18 @@ const VOWELS = [
   [c=>'โ'+c,  'สระ โอ',  'oo 音'], [c=>c+'อ',  'สระ อ',   '短 o'],
   [c=>'เ'+c+'า','สระ เอา','ao 音'],[c=>'เ'+c+'ีย','สระ เอีย','ia 音'],
 ];
+// วรรณยุกต์ 5 เสียง: [mark, name, display_label]
+const TONES = [
+  ['',       'สามัญ',  'สามัญ (–)'],
+  ['\u0E48', 'เอก',    'เอก (่)'],
+  ['\u0E49', 'โท',     'โท (้)'],
+  ['\u0E4A', 'ตรี',    'ตรี (๊)'],
+  ['\u0E4B', 'จัตวา',  'จัตวา (๋)'],
+];
+// ใส่วรรณยุกต์ระหว่างพยัญชนะกับสระ
+function makeSyl(conChar, toneChar, vowFn) {
+  return vowFn(conChar + toneChar);
+}
 
 // ══════════════════════════════════════════
 //  MODE SWITCHER
@@ -399,7 +411,7 @@ function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 // ══════════════════════════════════════════
 //  QUIZ MODE
 // ══════════════════════════════════════════
-let qCurCon, qCurVow, qAnswered;
+let qCurCon, qCurVow, qCurTone, qAnswered;
 
 function quizNewQ() {
   qAnswered = false;
@@ -408,16 +420,17 @@ function quizNewQ() {
   document.getElementById('q-next-btn').className = '';
   qCurCon = pick(CONSONANTS);
   qCurVow = pick(VOWELS);
+  qCurTone = pick(TONES);
   buildQuizAnswers();
   setTimeout(speakSyllable, 500);
 }
 
 function buildQuizAnswers() {
-  const correct = qCurVow[0](qCurCon[0]);
+  const correct = makeSyl(qCurCon[0], qCurTone[0], qCurVow[0]);
   const pool = new Set([correct]);
   let attempts = 0;
-  while (pool.size < 4 && attempts++ < 300) {
-    const w = pick(VOWELS)[0](pick(CONSONANTS)[0]);
+  while (pool.size < 4 && attempts++ < 400) {
+    const w = makeSyl(pick(CONSONANTS)[0], pick(TONES)[0], pick(VOWELS)[0]);
     if (w !== correct) pool.add(w);
   }
   const opts = [...pool].sort(() => Math.random() - 0.5).slice(0, 4);
@@ -437,7 +450,7 @@ function buildQuizAnswers() {
 function quizOnAnswer(chosen, btn) {
   if (qAnswered) return;
   qAnswered = true; totalQ++;
-  const correct = qCurVow[0](qCurCon[0]);
+  const correct = makeSyl(qCurCon[0], qCurTone[0], qCurVow[0]);
   const l = L;
 
   if (chosen === correct) {
@@ -454,7 +467,7 @@ function quizOnAnswer(chosen, btn) {
     showBadge('❌'); showBubble(pick(l.wrong));
     document.getElementById('reveal-label').innerHTML = l.revealCorrect(correct);
     document.getElementById('hint-content').innerHTML =
-      `${qCurCon[0]} <small style="color:#aaa">(${qCurCon[2]})</small><br>+ ${qCurVow[1]}<br>= <b>${correct}</b>`;
+      `${qCurCon[0]} + ${qCurTone[2]} + ${qCurVow[1]}<br>= <b>${correct}</b>`;
     document.getElementById('hint-box').classList.add('show');
   }
   updateScoreUI();
@@ -465,7 +478,7 @@ function quizNextQ() { quizNewQ(); }
 // ══════════════════════════════════════════
 //  MATCH MODE (連連看)
 // ══════════════════════════════════════════
-let mPairs = [];        // [{ci, vi, matched}] — 4 pairs
+let mPairs = [];        // [{ci, vi, ti, matched}] — 4 pairs
 let mVowOrder = [];     // display positions → pair index
 let mConOrder = [];
 let mSelVow = null;     // selected vowel position index
@@ -480,8 +493,9 @@ function initMatchRound() {
   while (mPairs.length < 4 && attempts++ < 500) {
     const ci = Math.floor(Math.random() * CONSONANTS.length);
     const vi = Math.floor(Math.random() * VOWELS.length);
+    const ti = Math.floor(Math.random() * TONES.length);
     if (!usedC.has(ci) && !usedV.has(vi)) {
-      mPairs.push({ci, vi, matched: false});
+      mPairs.push({ci, vi, ti, matched: false});
       usedC.add(ci); usedV.add(vi);
     }
   }
@@ -503,12 +517,14 @@ function renderMatchTiles() {
   mVowOrder.forEach((pairIdx, pos) => {
     const p = mPairs[pairIdx];
     const vow = VOWELS[p.vi];
-    const displayForm = vow[0]('□').replace('□','') || vow[1];
+    const tone = TONES[p.ti];
+    const displayForm = vow[0]('อ' + tone[0]).replace('อ','') || vow[1];
     const tile = document.createElement('div');
     tile.className = 'tile vow-tile';
     tile.id = 'vow-' + pos;
     tile.dataset.pos = pos;
-    tile.innerHTML = `<span class="speak-icon">🔊</span><span>${displayForm || vow[0]('◯').replace('◯','') || '?'}</span><div class="tile-sub">${vow[1]}</div>`;
+    const toneSub = tone[0] ? ` · ${tone[1]}` : '';
+    tile.innerHTML = `<span class="speak-icon">🔊</span><span>${displayForm || vow[0]('◯').replace('◯','') || '?'}</span><div class="tile-sub">${vow[1]}${toneSub}</div>`;
     tile.addEventListener('click', () => onTapVow(pos));
     vowRow.appendChild(tile);
   });
@@ -570,7 +586,7 @@ function tryMatch() {
 
     // Speak the matched syllable
     const p = mPairs[vPairIdx];
-    const syllable = VOWELS[p.vi][0](CONSONANTS[p.ci][0]);
+    const syllable = makeSyl(CONSONANTS[p.ci][0], TONES[p.ti][0], VOWELS[p.vi][0]);
     speakThai(syllable, 'm-speaker-btn');
     showMatchAudioInfo(vPairIdx, true);
 
@@ -605,14 +621,14 @@ function clearTileSelect() {
 
 function playMatchAudio(pairIdx) {
   const p = mPairs[pairIdx];
-  const syllable = VOWELS[p.vi][0](CONSONANTS[p.ci][0]);
+  const syllable = makeSyl(CONSONANTS[p.ci][0], TONES[p.ti][0], VOWELS[p.vi][0]);
   speakThai(syllable, 'm-speaker-btn');
   showMatchAudioInfo(pairIdx, false);
 }
 
 function showMatchAudioInfo(pairIdx, revealed) {
   const p = mPairs[pairIdx];
-  const syllable = VOWELS[p.vi][0](CONSONANTS[p.ci][0]);
+  const syllable = makeSyl(CONSONANTS[p.ci][0], TONES[p.ti][0], VOWELS[p.vi][0]);
   document.getElementById('m-audio-syllable').textContent = revealed ? syllable : '???';
 }
 
