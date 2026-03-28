@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🇹🇭 泰文發音練習</title>
+<title>🇹🇭 泰文聽力練習</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --pink: #FF6B9D; --purple: #9B59B6; --blue: #3D5AF1;
-    --green: #00C853; --gold: #FFD700; --orange: #FF8C00;
+    --green: #00C853; --gold: #FFD700;
   }
   body {
     font-family: 'Microsoft JhengHei','微軟正黑體','PingFang TC',sans-serif;
     background: linear-gradient(160deg,#FFF0F5 0%,#E8F4FF 40%,#F5FFF0 100%);
     min-height: 100vh;
     display: flex; flex-direction: column; align-items: center;
-    padding: 16px 12px 32px;
+    padding: 20px 12px 40px;
   }
 
   /* ── Lang toggle ── */
@@ -28,34 +28,18 @@
   }
 
   /* ── Header ── */
-  .title-area { text-align: center; margin-bottom: 12px; }
+  .title-area { text-align: center; margin-bottom: 20px; }
   .title-area h1 {
-    font-size: clamp(1.6rem,5vw,2.6rem); font-weight: 900;
-    color: var(--pink);
-    text-shadow: 3px 3px 0 #FFB3D1;
+    font-size: clamp(1.6rem,5vw,2.4rem); font-weight: 900;
+    color: var(--pink); text-shadow: 3px 3px 0 #FFB3D1;
     animation: wiggle 3s ease-in-out infinite;
   }
   @keyframes wiggle { 0%,100%{transform:rotate(-1deg)} 50%{transform:rotate(1deg)} }
-  .subtitle { font-size: 0.95rem; color: var(--purple); font-weight: 700; margin-top: 4px; }
+  .subtitle { font-size: 0.9rem; color: var(--purple); font-weight: 700; margin-top: 4px; }
 
-  /* ── Level Tabs ── */
-  .level-tabs {
-    display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; justify-content: center;
-  }
-  .level-btn {
-    border: none; border-radius: 50px; padding: 8px 20px;
-    font-size: 0.85rem; font-weight: 700; cursor: pointer;
-    font-family: inherit; transition: all 0.2s;
-    background: rgba(255,255,255,0.7); color: #888; border: 2px solid #e0e0e0;
-  }
-  .level-btn.active { color: #fff; border-color: transparent; }
-  .level-btn.lv1.active { background: linear-gradient(135deg,#4CAF50,#2E7D32); }
-  .level-btn.lv2.active { background: linear-gradient(135deg,#FF8C00,#E65100); }
-  .level-btn.lv3.active { background: linear-gradient(135deg,#9C27B0,#6A1B9A); }
-
-  /* ── Top bar ── */
+  /* ── Score bar ── */
   .top-bar {
-    display: flex; gap: 10px; margin-bottom: 14px;
+    display: flex; gap: 10px; margin-bottom: 24px;
     flex-wrap: wrap; justify-content: center;
   }
   .streak-badge {
@@ -79,81 +63,56 @@
   }
   .score-text { font-size: 0.95rem; font-weight: 900; color:#fff; }
 
-  /* ── Info card (consonant / vowel display) ── */
-  .info-strip {
-    display: flex; gap: 10px; margin-bottom: 14px;
-    max-width: 420px; width: 100%;
-  }
-  .info-chip {
-    flex: 1; background: #fff; border-radius: 14px;
-    padding: 10px 14px; text-align: center;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-    cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .info-chip:active { transform: scale(0.94); }
-  .info-chip:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.14); transform: translateY(-2px); }
-  .chip-label { font-size: 0.72rem; color: #aaa; font-weight: 700; letter-spacing: 1px; }
-  .chip-char { font-size: 2.2rem; font-weight: 900; color: var(--blue); line-height: 1.2; }
-  .chip-name { font-size: 0.75rem; color: #888; margin-top: 2px; }
-  .chip-speaker { font-size: 0.8rem; margin-top: 3px; color: #bbb; }
-
-  /* ── Question Card ── */
-  .question-card {
+  /* ── Speaker Card ── */
+  .speaker-card {
     background: #fff; border-radius: 28px;
-    padding: 28px 36px 22px;
+    padding: 32px 40px 28px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.1);
     border: 4px solid #E8D5FF;
-    margin-bottom: 18px; text-align: center;
-    width: 100%; max-width: 420px;
+    margin-bottom: 24px; text-align: center;
+    width: 100%; max-width: 380px;
+    animation: slideIn 0.38s cubic-bezier(0.175,0.885,0.32,1.275);
   }
-  .question-card.slide-in { animation: slideIn 0.38s cubic-bezier(0.175,0.885,0.32,1.275); }
   @keyframes slideIn { 0%{transform:translateY(-18px) scale(0.95);opacity:0} 100%{transform:none;opacity:1} }
 
-  .q-label { font-size: 0.82rem; color: #bbb; font-weight: 700; margin-bottom: 10px; letter-spacing: 1px; }
-  .speak-btn {
-    background: none; border: 2px solid #E8D5FF; border-radius: 50px;
-    padding: 5px 14px; font-size: 1rem; cursor: pointer;
-    color: var(--purple); margin-top: 10px; font-family: inherit; font-weight: 700;
-    transition: all 0.15s;
-  }
-  .speak-btn:hover { background: #f5f0ff; transform: scale(1.08); }
-  .speak-btn.playing { animation: speakPulse 0.6s ease infinite alternate; }
-  @keyframes speakPulse { from{transform:scale(1)} to{transform:scale(1.15)} }
-  .thai-syllable {
-    font-size: clamp(3.5rem,14vw,6rem); font-weight: 900;
-    color: var(--blue); line-height: 1.1;
-    animation: pop 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
-  }
-  .q-eq { font-size: 2rem; color: #ccc; font-weight: 700; margin: 0 6px; }
-  @keyframes pop { 0%{transform:scale(0) rotate(-20deg);opacity:0} 70%{transform:scale(1.12) rotate(4deg)} 100%{transform:scale(1) rotate(0)} }
+  .q-label { font-size: 0.82rem; color: #bbb; font-weight: 700; margin-bottom: 18px; letter-spacing: 1px; }
 
-  .decompose {
+  .speaker-btn {
+    width: 110px; height: 110px; border-radius: 50%;
+    background: linear-gradient(135deg,#A78BFA,#7C3AED);
+    border: none; cursor: pointer; font-size: 3.5rem;
     display: flex; align-items: center; justify-content: center;
-    gap: 8px; margin-top: 10px;
+    margin: 0 auto 16px;
+    box-shadow: 0 8px 24px rgba(124,58,237,0.4), 0 0 0 0 rgba(124,58,237,0.3);
+    transition: transform 0.15s;
+    -webkit-tap-highlight-color: transparent;
   }
-  .dc-part {
-    background: #f5f0ff; border-radius: 10px; padding: 4px 12px;
-    font-size: 2rem; font-weight: 900; color: var(--purple);
+  .speaker-btn:active { transform: scale(0.92); }
+  .speaker-btn.playing {
+    animation: speakPulse 0.7s ease infinite alternate, ripple 1s ease infinite;
   }
-  .dc-plus { font-size: 1.4rem; color: #ccc; font-weight: 700; }
+  @keyframes speakPulse { from{transform:scale(1)} to{transform:scale(1.1)} }
+  @keyframes ripple {
+    0%   { box-shadow: 0 8px 24px rgba(124,58,237,0.4), 0 0 0 0   rgba(124,58,237,0.4); }
+    100% { box-shadow: 0 8px 24px rgba(124,58,237,0.4), 0 0 0 28px rgba(124,58,237,0); }
+  }
+  .replay-label { font-size: 0.82rem; color: #aaa; font-weight: 700; }
 
   /* ── Answer Grid ── */
   .answers-label { font-size: 0.9rem; color: #888; font-weight: 700; margin-bottom: 10px; text-align: center; }
   .ans-grid {
     display: grid; grid-template-columns: 1fr 1fr;
-    gap: 10px; max-width: 420px; width: 100%; margin-bottom: 18px;
+    gap: 12px; max-width: 380px; width: 100%; margin-bottom: 20px;
   }
   .ans-btn {
-    border: none; border-radius: 16px; padding: 14px 10px;
-    font-size: clamp(1.6rem,6vw,2.4rem); font-weight: 900;
+    border: none; border-radius: 18px; padding: 18px 10px;
+    font-size: clamp(2rem,7vw,2.8rem); font-weight: 900;
     cursor: pointer; font-family: inherit; color: #fff;
-    box-shadow: 0 5px 0 rgba(0,0,0,0.18);
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    box-shadow: 0 6px 0 rgba(0,0,0,0.2);
     transition: transform 0.12s, box-shadow 0.12s, opacity 0.2s;
     -webkit-tap-highlight-color: transparent;
   }
-  .ans-btn:not(:disabled):hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 0 rgba(0,0,0,0.18); }
+  .ans-btn:not(:disabled):hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 9px 0 rgba(0,0,0,0.2); }
   .ans-btn:not(:disabled):active { transform: scale(0.93); box-shadow: 0 1px 0 rgba(0,0,0,0.15); }
   .ans-btn:nth-child(1) { background: linear-gradient(135deg,#FF6B9D,#FF4757); }
   .ans-btn:nth-child(2) { background: linear-gradient(135deg,#3D5AF1,#1A3AE0); }
@@ -163,6 +122,13 @@
   @keyframes btnOK { 0%,100%{transform:scale(1)} 50%{transform:scale(1.25) rotate(-4deg)} }
   .ans-btn.wrong { background: linear-gradient(135deg,#FF5252,#B71C1C) !important; animation: btnNG 0.4s ease; }
   @keyframes btnNG { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+
+  /* ── Reveal label ── */
+  .reveal-label {
+    font-size: 0.9rem; color: #888; text-align: center;
+    margin-bottom: 12px; min-height: 22px; font-weight: 600;
+  }
+  .reveal-label span { color: var(--purple); font-weight: 900; font-size: 1.1rem; }
 
   /* ── Next btn ── */
   #next-btn {
@@ -175,12 +141,12 @@
     transition: transform 0.15s;
   }
   #next-btn.vis { display: inline-block; animation: nextIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
-  @keyframes nextIn { 0%{transform:scale(0) rotate(-10deg);opacity:0} 100%{transform:scale(1) rotate(0);opacity:1} }
+  @keyframes nextIn { 0%{transform:scale(0) rotate(-10deg);opacity:0} 100%{transform:scale(1);opacity:1} }
   #next-btn:hover { transform: translateY(-3px) scale(1.05); }
 
   /* ── Hint panel ── */
   .hint-box {
-    max-width: 420px; width: 100%;
+    max-width: 380px; width: 100%;
     background: #fff; border-radius: 18px;
     padding: 14px 18px; margin-bottom: 14px;
     box-shadow: 0 3px 14px rgba(0,0,0,0.07);
@@ -190,7 +156,8 @@
   .hint-box.show { display: block; animation: fadeIn 0.3s ease; }
   @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
   .hint-title { font-size: 0.78rem; color: var(--purple); font-weight: 700; margin-bottom: 6px; }
-  .hint-content { font-size: 0.88rem; color: #555; line-height: 1.6; }
+  .hint-row { font-size: 1rem; color: #555; line-height: 2; }
+  .hint-row b { font-size: 1.4rem; color: var(--blue); }
 
   /* ── Confetti ── */
   #cf-layer { position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;overflow:hidden; }
@@ -201,8 +168,8 @@
   #big-badge.hide { transform:translate(-50%,-50%) scale(0);transition:transform 0.16s ease-in; }
 
   @media(max-width:380px) {
-    .ans-grid { grid-template-columns: 1fr 1fr; gap: 7px; }
-    .thai-syllable { font-size: 3.5rem; }
+    .ans-btn { font-size: 1.8rem; padding: 14px 6px; }
+    .speaker-btn { width: 90px; height: 90px; font-size: 2.8rem; }
   }
 </style>
 </head>
@@ -214,25 +181,13 @@
 <button id="lang-btn" onclick="toggleLang()">🇹🇭 ภาษาไทย</button>
 
 <div class="title-area">
-  <h1 id="title-h1">🇹🇭 泰文發音練習</h1>
-  <div class="subtitle" id="subtitle">選出正確的拼音！</div>
-</div>
-
-<div class="level-tabs">
-  <button class="level-btn lv1 active" id="btn-lv1" onclick="setLevel(1)">
-    <span id="lv1-label">🌱 初級</span>
-  </button>
-  <button class="level-btn lv2" id="btn-lv2" onclick="setLevel(2)">
-    <span id="lv2-label">🔥 中級</span>
-  </button>
-  <button class="level-btn lv3" id="btn-lv3" onclick="setLevel(3)">
-    <span id="lv3-label">⚡ 進階</span>
-  </button>
+  <h1 id="title-h1">🇹🇭 泰文聽力練習</h1>
+  <div class="subtitle" id="subtitle">聽聲音，選正確的泰文字！</div>
 </div>
 
 <div class="top-bar">
   <div class="streak-badge" id="streak-badge">
-    <span class="s-icon">🔥</span>
+    <span class="s-icon">🏅</span>
     <span class="s-label" id="s-label">連勝</span>
     <span class="s-num" id="s-num">0</span>
     <span class="s-suffix" id="s-suffix">次</span>
@@ -242,41 +197,22 @@
   </div>
 </div>
 
-<div class="info-strip">
-  <div class="info-chip" onclick="speakThai(curCon[0])">
-    <div class="chip-label" id="chip-con-label">子音</div>
-    <div class="chip-char" id="chip-con">ก</div>
-    <div class="chip-name" id="chip-con-name">ก ไก่</div>
-    <div class="chip-speaker">🔊 點擊發音</div>
-  </div>
-  <div class="info-chip" onclick="speakThai(curVow[0](curCon[0]))">
-    <div class="chip-label" id="chip-vow-label">母音</div>
-    <div class="chip-char" id="chip-vow">า</div>
-    <div class="chip-name" id="chip-vow-name">สระ อา</div>
-    <div class="chip-speaker">🔊 點擊發音</div>
-  </div>
+<div class="speaker-card" id="speaker-card">
+  <div class="q-label" id="q-label">聽聲音，選正確的泰文音節</div>
+  <button class="speaker-btn" id="speaker-btn" onclick="speakSyllable()">🔊</button>
+  <div class="replay-label" id="replay-label">點擊重播</div>
 </div>
 
-<div class="question-card" id="question-card">
-  <div class="q-label" id="q-label">這個組合是哪個音節？</div>
-  <div class="decompose" id="decompose">
-    <div class="dc-part" id="dc-con">ก</div>
-    <div class="dc-plus">＋</div>
-    <div class="dc-part" id="dc-vow">า</div>
-    <span class="q-eq">=</span>
-    <div class="thai-syllable" id="thai-syllable">?</div>
-  </div>
-  <button class="speak-btn" id="speak-btn" onclick="speakSyllable()">🔊 聽發音</button>
-</div>
-
-<div class="answers-label" id="answers-label">👇 選擇正確的發音</div>
+<div class="answers-label" id="answers-label">👇 選擇正確的泰文字</div>
 <div class="ans-grid" id="ans-grid"></div>
+
+<div class="reveal-label" id="reveal-label"></div>
 
 <button id="next-btn" onclick="nextQ()">✨ 下一題 ➡️</button>
 
 <div class="hint-box" id="hint-box">
   <div class="hint-title" id="hint-title">💡 提示</div>
-  <div class="hint-content" id="hint-content"></div>
+  <div class="hint-row" id="hint-content"></div>
 </div>
 
 <script>
@@ -286,10 +222,12 @@ function speakThai(text, rate) {
   speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = 'th-TH';
-  utter.rate = rate || 0.8;
+  utter.rate = rate || 0.85;
   utter.pitch = 1;
-  const btn = document.getElementById('speak-btn');
-  if (btn) { btn.classList.add('playing'); utter.onend = () => btn.classList.remove('playing'); }
+  const btn = document.getElementById('speaker-btn');
+  btn.classList.add('playing');
+  utter.onend = () => btn.classList.remove('playing');
+  utter.onerror = () => btn.classList.remove('playing');
   speechSynthesis.speak(utter);
 }
 function speakSyllable() { speakThai(curVow[0](curCon[0])); }
@@ -297,30 +235,34 @@ function speakSyllable() { speakThai(curVow[0](curCon[0])); }
 // ── Language ──────────────────────────────────────────────────
 const L = {
   zh: {
-    title: '🇹🇭 泰文發音練習', subtitle: '選出正確的泰文音節！',
-    lv1: '🌱 初級', lv2: '🔥 中級', lv3: '⚡ 進階',
+    title: '🇹🇭 泰文聽力練習',
+    subtitle: '聽聲音，選正確的泰文字！',
     streakLabel: '連勝', streakSuffix: '次',
     score: (c,t) => `答對 ${c} / ${t}`,
-    qLabel: '這個組合是哪個音節？', ansLabel: '👇 選擇正確的泰文音節',
-    nextBtn: '✨ 下一題 ➡️', hintTitle: '💡 提示',
-    conLabel: '子音', vowLabel: '母音',
-    speakHint: '🔊 點擊發音', speakBtn: '🔊 聽發音',
+    qLabel: '聽聲音，選正確的泰文音節',
+    ansLabel: '👇 選擇正確的泰文字',
+    replayLabel: '點擊重播',
+    nextBtn: '✨ 下一題 ➡️',
+    hintTitle: '💡 提示',
     langBtn: '🇹🇭 ภาษาไทย',
+    revealCorrect: s => `✅ 正確答案是：<span>${s}</span>`,
     correct: ['答對了！🎉','完全正確！✨','太棒了！🌟','好厲害！🏆','完美！🎊','繼續加油！💪'],
     wrong:   ['再試試看！💪','很接近了！😊','不對喔，繼續！🌈','加油！再想想！✨'],
     streakSuper: n => `🔥 連勝 ${n} 次！泰文達人！👑`,
     streakGood:  n => `⚡ 連勝 ${n} 次！好厲害！🌟`,
   },
   th: {
-    title: '🇹🇭 ฝึกออกเสียงภาษาไทย', subtitle: 'เลือกพยางค์ไทยที่ถูกต้อง!',
-    lv1: '🌱 ง่าย', lv2: '🔥 กลาง', lv3: '⚡ ยาก',
+    title: '🇹🇭 ฝึกฟังภาษาไทย',
+    subtitle: 'ฟังเสียง แล้วเลือกพยางค์ที่ถูกต้อง!',
     streakLabel: 'ต่อเนื่อง', streakSuffix: 'ครั้ง',
     score: (c,t) => `ถูก ${c} / ${t}`,
-    qLabel: 'รวมกันได้พยางค์ใด?', ansLabel: '👇 เลือกพยางค์ภาษาไทย',
-    nextBtn: '✨ ต่อไป ➡️', hintTitle: '💡 คำใบ้',
-    conLabel: 'พยัญชนะ', vowLabel: 'สระ',
-  speakHint: '🔊 แตะเพื่อฟัง', speakBtn: '🔊 ฟังเสียง',
+    qLabel: 'ฟังเสียง แล้วเลือกพยางค์',
+    ansLabel: '👇 เลือกพยางค์ภาษาไทย',
+    replayLabel: 'แตะเพื่อเล่นซ้ำ',
+    nextBtn: '✨ ต่อไป ➡️',
+    hintTitle: '💡 คำใบ้',
     langBtn: '🇹🇼 繁體中文',
+    revealCorrect: s => `✅ คำตอบที่ถูกต้องคือ：<span>${s}</span>`,
     correct: ['ถูกต้อง! 🎉','เก่งมาก! ✨','ยอดเยี่ยม! 🌟','เก่งจริงๆ! 🏆'],
     wrong:   ['ลองใหม่! 💪','ใกล้แล้ว! 😊','ยังไม่ถูก ลองต่อ! 🌈'],
     streakSuper: n => `🔥 ต่อเนื่อง ${n} ครั้ง! เก่งมาก! 👑`,
@@ -328,162 +270,101 @@ const L = {
   }
 };
 let lang = 'zh';
-function toggleLang() {
-  lang = lang === 'zh' ? 'th' : 'zh';
-  applyLang(); updateUI();
-}
+function toggleLang() { lang = lang === 'zh' ? 'th' : 'zh'; applyLang(); updateUI(); }
 function applyLang() {
   const l = L[lang];
   document.getElementById('title-h1').textContent = l.title;
   document.getElementById('subtitle').textContent = l.subtitle;
-  document.getElementById('lv1-label').textContent = l.lv1;
-  document.getElementById('lv2-label').textContent = l.lv2;
-  document.getElementById('lv3-label').textContent = l.lv3;
   document.getElementById('s-label').textContent = l.streakLabel;
   document.getElementById('s-suffix').textContent = l.streakSuffix;
   document.getElementById('q-label').textContent = l.qLabel;
   document.getElementById('answers-label').textContent = l.ansLabel;
+  document.getElementById('replay-label').textContent = l.replayLabel;
   document.getElementById('next-btn').textContent = l.nextBtn;
   document.getElementById('hint-title').textContent = l.hintTitle;
-  document.getElementById('chip-con-label').textContent = l.conLabel;
-  document.getElementById('chip-vow-label').textContent = l.vowLabel;
   document.getElementById('lang-btn').textContent = l.langBtn;
-  document.querySelectorAll('.chip-speaker').forEach(el => el.textContent = l.speakHint);
-  const sb = document.getElementById('speak-btn');
-  if (sb) sb.textContent = l.speakBtn;
 }
 
 // ── Data ──────────────────────────────────────────────────────
 const CONSONANTS = [
-  // [char, roman, class, name_th, tip_zh]
   ['ก','k','mid','ก ไก่','發音類似 k，不送氣'],
   ['ข','kh','high','ข ไข่','發音類似 k，送氣'],
-  ['ค','kh','low','ค ควาย','發音類似 k，送氣（低調）'],
+  ['ค','kh','low','ค ควาย','發音類似 k，送氣'],
   ['จ','j','mid','จ จาน','發音類似 j'],
-  ['ช','ch','low','ช ช้าง','發音類似 ch，送氣'],
+  ['ช','ch','low','ช ช้าง','發音類似 ch'],
   ['ด','d','mid','ด เด็ก','發音類似 d'],
   ['ต','t','mid','ต เต่า','發音類似 t，不送氣'],
   ['ถ','th','high','ถ ถุง','發音類似 t，送氣'],
-  ['ท','th','low','ท ทหาร','發音類似 t，送氣（低調）'],
+  ['ท','th','low','ท ทหาร','發音類似 t，送氣'],
   ['น','n','low','น หนู','發音類似 n'],
   ['บ','b','mid','บ ใบไม้','發音類似 b'],
   ['ป','p','mid','ป ปลา','發音類似 p，不送氣'],
   ['ผ','ph','high','ผ ผึ้ง','發音類似 p，送氣'],
-  ['พ','ph','low','พ พาน','發音類似 p，送氣（低調）'],
+  ['พ','ph','low','พ พาน','發音類似 p，送氣'],
   ['ม','m','low','ม ม้า','發音類似 m'],
-  ['ร','r','low','ร เรือ','發音類似 r（捲舌）'],
+  ['ร','r','low','ร เรือ','發音類似 r'],
   ['ล','l','low','ล ลิง','發音類似 l'],
   ['ว','w','low','ว แหวน','發音類似 w'],
   ['ส','s','high','ส เสือ','發音類似 s'],
   ['ห','h','high','ห หีบ','發音類似 h'],
-  ['อ','–','mid','อ อ่าง','聲門塞音（無輔音）'],
+  ['อ','–','mid','อ อ่าง','聲門塞音'],
 ];
-
 const VOWELS = [
-  // [display_fn(c), roman, name_th, tip_zh]
-  [c => c + 'า',  'aa', 'สระ อา', '長 a 音，如「啊～」'],
-  [c => c + 'ะ',  'a',  'สระ อะ', '短 a 音，如快速的「ㄚ」'],
-  [c => c + 'ิ',  'i',  'สระ อิ', '短 i 音，如「衣」'],
-  [c => c + 'ี',  'ii', 'สระ อี', '長 i 音，如「伊～」'],
-  [c => c + 'ุ',  'u',  'สระ อุ', '短 u 音，如「污」'],
-  [c => c + 'ู',  'uu', 'สระ อู', '長 u 音，如「屋～」'],
-  [c => 'เ' + c,  'ee', 'สระ เอ', '類似英文 "say" 中的 ay'],
-  [c => 'แ' + c,  'ae', 'สระ แอ', '類似英文 "cat" 中的 a'],
-  [c => 'โ' + c,  'oo', 'สระ โอ', '類似英文 "go" 中的 o'],
-  [c => c + 'อ',  'o',  'สระ อ',  '短 o 音，如「喔」'],
-  [c => 'เ' + c + 'า', 'ao', 'สระ เอา', '複合母音，如「澳」'],
-  [c => 'เ' + c + 'ีย', 'ia', 'สระ เอีย', '複合母音 ia'],
+  [c => c + 'า',        'aa',  'สระ อา',   '長 a 音，如「啊～」'],
+  [c => c + 'ะ',        'a',   'สระ อะ',   '短 a 音'],
+  [c => c + 'ิ',        'i',   'สระ อิ',   '短 i 音，如「衣」'],
+  [c => c + 'ี',        'ii',  'สระ อี',   '長 i 音，如「伊～」'],
+  [c => c + 'ุ',        'u',   'สระ อุ',   '短 u 音，如「污」'],
+  [c => c + 'ู',        'uu',  'สระ อู',   '長 u 音，如「屋～」'],
+  [c => 'เ' + c,        'ee',  'สระ เอ',   '類似英文 say 的 ay'],
+  [c => 'แ' + c,        'ae',  'สระ แอ',   '類似英文 cat 的 a'],
+  [c => 'โ' + c,        'oo',  'สระ โอ',   '類似英文 go 的 o'],
+  [c => c + 'อ',        'o',   'สระ อ',    '短 o 音'],
+  [c => 'เ' + c + 'า',  'ao',  'สระ เอา',  '複合母音，如「澳」'],
+  [c => 'เ' + c + 'ีย', 'ia',  'สระ เอีย', '複合母音 ia'],
 ];
 
-// Levels
-const LEVELS = {
-  1: { cons: [0,3,5,6,9,10,14], vows: [0,2,3,4,5] },      // ก จ ด ต น บ ม + า ิ ี ุ ู
-  2: { cons: [0,1,3,5,6,7,9,10,12,14,16,18], vows: [0,1,2,3,4,5,6,7,8] }, // + เ- แ- โ-
-  3: { cons: Array.from({length:21},(_,i)=>i), vows: Array.from({length:12},(_,i)=>i) },
-};
-
-let level = 1;
+// ── Game state ──────────────────────────────────────────────
 let streak = 0, totalQ = 0, totalC = 0;
 let curCon, curVow, answered;
 
-function setLevel(lv) {
-  level = lv;
-  [1,2,3].forEach(n => {
-    document.getElementById('btn-lv' + n).classList.toggle('active', n === lv);
-  });
-  streak = 0; totalQ = 0; totalC = 0;
-  updateUI();
-  newQ();
-}
-
 function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-function rnd(arr) { return pickRandom(arr); }
 
 function newQ() {
   answered = false;
-  const lv = LEVELS[level];
-  const conIdx = pickRandom(lv.cons);
-  const vowIdx = pickRandom(lv.vows);
-  curCon = CONSONANTS[conIdx];
-  curVow = VOWELS[vowIdx];
-
-  // Info chips
-  const vowForm = curVow[0](curCon[0]).replace(curCon[0], curCon[0] === 'อ' ? '' : '').trim();
-  const displayVowForm = curVow[0]('□').replace('□','');
-  document.getElementById('chip-con').textContent = curCon[0];
-  document.getElementById('chip-con-name').textContent = curCon[3];
-  document.getElementById('chip-vow').textContent = displayVowForm || curVow[0]('').replace('','') || curVow[2].replace('สระ ','');
-  document.getElementById('chip-vow-name').textContent = curVow[2];
-
-  // Question card — show Thai consonant + Thai vowel form, syllable hidden as "?"
-  const card = document.getElementById('question-card');
-  card.classList.remove('slide-in');
-  void card.offsetWidth;
-  card.classList.add('slide-in');
-
-  document.getElementById('thai-syllable').textContent = '?';
-  document.getElementById('dc-con').textContent = curCon[0];
-  // show vowel form using placeholder □ then strip it
-  const vowDisplay = curVow[0]('□').replace('□', '');
-  document.getElementById('dc-vow').textContent = vowDisplay || curVow[2].replace('สระ ', '');
-
-  // Hide hint
+  document.getElementById('reveal-label').innerHTML = '';
   document.getElementById('hint-box').classList.remove('show');
-
-  // Build answers
-  buildAnswers();
   document.getElementById('next-btn').className = '';
 
-  // Auto-play syllable after short delay
-  setTimeout(() => speakSyllable(), 500);
+  curCon = pickRandom(CONSONANTS);
+  curVow = pickRandom(VOWELS);
+
+  // Animate card
+  const card = document.getElementById('speaker-card');
+  card.style.animation = 'none'; void card.offsetWidth;
+  card.style.animation = 'slideIn 0.38s cubic-bezier(0.175,0.885,0.32,1.275)';
+
+  buildAnswers();
+
+  // Auto-play after short delay
+  setTimeout(speakSyllable, 500);
 }
 
 function buildAnswers() {
-  // Options are Thai syllables; correct = curVow[0](curCon[0])
   const correct = curVow[0](curCon[0]);
-  const lv = LEVELS[level];
-  const pool = new Set();
-  pool.add(correct);
+  const pool = new Set([correct]);
 
-  // Generate wrong Thai syllable combinations
   let attempts = 0;
-  while (pool.size < 4 && attempts < 200) {
+  while (pool.size < 4 && attempts < 300) {
     attempts++;
-    const wc = CONSONANTS[pickRandom(lv.cons)];
-    const wv = VOWELS[pickRandom(lv.vows)];
+    const wc = pickRandom(CONSONANTS);
+    const wv = pickRandom(VOWELS);
     const w = wv[0](wc[0]);
     if (w !== correct) pool.add(w);
   }
-  // fallback with fixed syllables
-  [['ก','า'],['น','า'],['ม','า'],['บ','ี'],['ด','ู'],['ต','ะ']].forEach(([c,v]) => {
-    const s = VOWELS.find(vv => vv[0](c).includes(v)) || null;
-    if (!s) return;
-    const w = s[0](c);
-    if (pool.size < 4 && w !== correct) pool.add(w);
-  });
 
-  const opts = [...pool].sort(() => Math.random() - 0.5).slice(0,4);
-  if (!opts.includes(correct)) { opts[Math.floor(Math.random()*4)] = correct; }
+  const opts = [...pool].sort(() => Math.random() - 0.5).slice(0, 4);
+  if (!opts.includes(correct)) opts[Math.floor(Math.random() * 4)] = correct;
 
   const grid = document.getElementById('ans-grid');
   grid.innerHTML = '';
@@ -491,7 +372,10 @@ function buildAnswers() {
     const btn = document.createElement('button');
     btn.className = 'ans-btn';
     btn.textContent = opt;
-    btn.addEventListener('click', () => { speakThai(opt, 0.9); onAnswer(opt, btn); });
+    btn.addEventListener('click', () => {
+      speakThai(opt, 0.9);
+      onAnswer(opt, btn);
+    });
     grid.appendChild(btn);
   });
 }
@@ -501,13 +385,12 @@ function onAnswer(chosen, btn) {
   answered = true;
   totalQ++;
   const correct = curVow[0](curCon[0]);
+  const l = L[lang];
 
   if (chosen === correct) {
     totalC++; streak++;
     btn.classList.add('correct');
-    document.getElementById('thai-syllable').textContent = correct;
-    document.querySelectorAll('.ans-btn').forEach(b => { if(b!==btn){b.disabled=true;b.style.opacity='0.35';} });
-    const l = L[lang];
+    document.querySelectorAll('.ans-btn').forEach(b => { if (b !== btn) { b.disabled = true; b.style.opacity = '0.35'; } });
     if (streak >= 5 && streak % 5 === 0) {
       launchConfetti(50); showBadge('🏆');
       showBubble(l.streakSuper(streak));
@@ -516,21 +399,19 @@ function onAnswer(chosen, btn) {
       showBubble(l.streakGood(streak));
     } else {
       launchConfetti(14); showBadge('✅');
-      showBubble(rnd(l.correct));
+      showBubble(pickRandom(l.correct));
     }
   } else {
     streak = 0;
     btn.classList.add('wrong');
     btn.disabled = true; btn.style.opacity = '0.4';
-    // highlight correct + reveal syllable
-    document.getElementById('thai-syllable').textContent = correct;
     document.querySelectorAll('.ans-btn').forEach(b => {
-      if (b.textContent === correct) { b.classList.add('correct'); }
+      if (b.textContent === correct) b.classList.add('correct');
     });
     showBadge('❌');
-    const l = L[lang];
-    showBubble(rnd(l.wrong));
-    // show hint
+    showBubble(pickRandom(l.wrong));
+    // Show reveal label + hint
+    document.getElementById('reveal-label').innerHTML = l.revealCorrect(correct);
     showHint();
   }
 
@@ -539,12 +420,13 @@ function onAnswer(chosen, btn) {
 }
 
 function showHint() {
-  const box = document.getElementById('hint-box');
+  const l = L[lang];
+  const isZh = lang === 'zh';
   document.getElementById('hint-content').innerHTML =
-    `<b>${curCon[1]}</b> ← ${curCon[0]} (${curCon[3]})<br>` +
-    `<b>${curVow[1]}</b> ← ${curVow[2]}${lang === 'zh' ? '：' + curVow[3] : ''}<br>` +
-    `${lang === 'zh' ? '答案' : 'คำตอบ'}：<b style="color:#9B59B6;font-size:1.4em">${curVow[0](curCon[0])}</b>`;
-  box.classList.add('show');
+    `${curCon[0]} <small style="color:#aaa">(${curCon[3]})</small><br>` +
+    `+ ${curVow[2]}${isZh ? '：' + curVow[3] : ''}<br>` +
+    `= <b>${curVow[0](curCon[0])}</b>`;
+  document.getElementById('hint-box').classList.add('show');
 }
 
 function updateUI() {
@@ -553,13 +435,11 @@ function updateUI() {
   document.getElementById('score-text').textContent = l.score(totalC, totalQ);
   const badge = document.getElementById('streak-badge');
   badge.classList.remove('bump'); void badge.offsetWidth; badge.classList.add('bump');
-  const icon = badge.querySelector('.s-icon');
-  icon.textContent = streak >= 5 ? '🔥' : streak >= 3 ? '⚡' : '🏅';
+  badge.querySelector('.s-icon').textContent = streak >= 5 ? '🔥' : streak >= 3 ? '⚡' : '🏅';
 }
 
 function nextQ() { newQ(); }
 
-// Bubble (re-use question card subtitle area briefly)
 function showBubble(msg) {
   const el = document.getElementById('subtitle');
   el.textContent = msg;
@@ -570,24 +450,24 @@ function launchConfetti(n) {
   const layer = document.getElementById('cf-layer');
   layer.innerHTML = '';
   const em = ['🌟','⭐','🎉','🎊','✨','🌈','💫','🎈','🎀','🍭'];
-  for (let i=0;i<n;i++) {
+  for (let i = 0; i < n; i++) {
     setTimeout(() => {
       const el = document.createElement('div');
       el.className = 'cf';
-      el.textContent = em[Math.floor(Math.random()*em.length)];
-      el.style.left = (Math.random()*105-5)+'vw';
-      el.style.fontSize = (1+Math.random()*1.4)+'rem';
-      const dur = 1.6+Math.random()*2.2;
+      el.textContent = em[Math.floor(Math.random() * em.length)];
+      el.style.left = (Math.random() * 105 - 5) + 'vw';
+      el.style.fontSize = (1 + Math.random() * 1.4) + 'rem';
+      const dur = 1.6 + Math.random() * 2.2;
       el.style.animation = `cfFall ${dur}s linear forwards`;
       layer.appendChild(el);
-      setTimeout(()=>el.remove(), dur*1000+100);
-    }, Math.random()*500);
+      setTimeout(() => el.remove(), dur * 1000 + 100);
+    }, Math.random() * 500);
   }
 }
 function showBadge(e) {
   const el = document.getElementById('big-badge');
-  el.textContent = e; el.className='show';
-  setTimeout(()=>{el.className='hide';},600);
+  el.textContent = e; el.className = 'show';
+  setTimeout(() => { el.className = 'hide'; }, 600);
 }
 
 // Init
