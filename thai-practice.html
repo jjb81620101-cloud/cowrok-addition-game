@@ -300,7 +300,7 @@ body {
     </div>
   </div>
 
-  <div class="match-progress" id="match-progress">配對 <span id="m-matched">0</span> / 4</div>
+  <div class="match-progress" id="match-progress"></div>
 
   <!-- Arena -->
   <div class="match-arena" id="match-arena">
@@ -647,15 +647,8 @@ function tryMatch() {
     mSelVow = null; mSelCon = null;
     updateScoreUI(); updateMatchProgress();
 
-    if (mMatchedCount >= 4) {
-      setTimeout(showMatchComplete, 800);
-    } else {
-      // auto-play next unmatched pair
-      setTimeout(() => {
-        const nextIdx = mPairs.findIndex(p => !p.matched);
-        if (nextIdx >= 0) { mCurrentPairIdx = nextIdx; playMatchAudio(nextIdx); }
-      }, 1200);
-    }
+    // Next round immediately after correct match
+    setTimeout(() => initMatchRound(), 900);
   } else {
     // Wrong
     streak = 0; updateScoreUI();
