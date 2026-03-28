@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🇹🇭 泰文聽力練習</title>
+<script src="https://code.responsivevoice.org/responsivevoice.js?key=FREE"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -218,18 +219,37 @@
 <script>
 // ── Speech ──────────────────────────────────────────────────
 function speakThai(text, rate) {
+  const btn = document.getElementById('speaker-btn');
+  btn.classList.add('playing');
+  const done = () => btn.classList.remove('playing');
+
+  // Try ResponsiveVoice first (natural Google TTS voice)
+  if (window.responsiveVoice && responsiveVoice.voiceSupport()) {
+    responsiveVoice.cancel();
+    responsiveVoice.speak(text, 'Thai Female', {
+      rate: rate || 0.85,
+      pitch: 1,
+      volume: 1,
+      onend: done,
+      onerror: () => { done(); fallbackSpeak(text, rate); }
+    });
+  } else {
+    fallbackSpeak(text, rate);
+  }
+}
+
+function fallbackSpeak(text, rate) {
   if (!window.speechSynthesis) return;
   speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = 'th-TH';
   utter.rate = rate || 0.85;
-  utter.pitch = 1;
   const btn = document.getElementById('speaker-btn');
-  btn.classList.add('playing');
   utter.onend = () => btn.classList.remove('playing');
   utter.onerror = () => btn.classList.remove('playing');
   speechSynthesis.speak(utter);
 }
+
 function speakSyllable() { speakThai(curVow[0](curCon[0])); }
 
 // ── Language ──────────────────────────────────────────────────
@@ -373,7 +393,7 @@ function buildAnswers() {
     btn.className = 'ans-btn';
     btn.textContent = opt;
     btn.addEventListener('click', () => {
-      speakThai(opt, 0.9);
+      speakThai(opt);
       onAnswer(opt, btn);
     });
     grid.appendChild(btn);
