@@ -49,6 +49,29 @@ canvas{display:block;cursor:crosshair;touch-action:none}
 #reroll-btn:hover:not(:disabled){border-color:#FFD700;color:#FFD700}
 #reroll-btn:disabled{opacity:.4;cursor:not-allowed}
 #skip-btn{background:transparent;border:1px solid #444;border-radius:50px;padding:6px 16px;color:#666;font-weight:700;cursor:pointer;font-family:inherit;font-size:.8rem}
+/* Equipment card */
+.req{background:linear-gradient(135deg,#3a2000,#2a1500);border:2px solid #FF9800}
+.req:hover{box-shadow:0 8px 24px rgba(255,152,0,.55);border-color:#FFD54F}
+.breq{background:#E65100;color:#FFE0B2}.unm.ceq{color:#FFD54F}
+/* Hero select */
+#hsov{display:flex;position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:300;align-items:center;justify-content:center;flex-direction:column;gap:14px}
+#hs-title{font-size:1.6rem;font-weight:900;color:#FFD700;text-shadow:0 0 20px #FFD700}
+#hs-cards{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.hcard{border-radius:16px;padding:16px 18px;min-width:140px;max-width:165px;cursor:pointer;transition:all .2s;text-align:center;background:linear-gradient(135deg,#1a2a1a,#0d1a0d);border:2px solid #4a8a4a}
+.hcard:hover{transform:translateY(-5px);border-color:#FFD700;box-shadow:0 8px 24px rgba(255,215,0,.4)}
+.hem{font-size:2.4rem;margin-bottom:6px}
+.hnm{font-weight:900;font-size:1rem;color:#90EE90;margin-bottom:4px}
+.hdc{font-size:.72rem;color:#aaa;line-height:1.4;margin-bottom:6px}
+.habl{font-size:.68rem;color:#FFD700;background:rgba(255,215,0,.1);padding:3px 8px;border-radius:50px;display:inline-block}
+/* Equipment row */
+#eqrow{display:flex;gap:8px;padding:4px 12px;background:rgba(0,0,0,.55);width:100%;justify-content:center;align-items:center;flex-wrap:wrap;border-bottom:1px solid #1a3a1a}
+.eqslot{border:1px solid #444;border-radius:8px;padding:3px 10px;font-size:.75rem;min-width:88px;text-align:center;background:rgba(255,255,255,.03);color:#888}
+.eqslot.on{border-color:#FF9800;color:#FFD700}
+/* Ability button */
+#abtn{background:linear-gradient(135deg,#7a5500,#5a3d00);border:2px solid #FF9800;border-radius:50px;padding:5px 14px;color:#FFD700;font-weight:900;cursor:pointer;font-family:inherit;font-size:.8rem;transition:all .2s}
+#abtn:disabled{opacity:.35;cursor:not-allowed;filter:grayscale(1)}
+#abtn.rdy{animation:abglow 1.5s ease-in-out infinite}
+@keyframes abglow{0%,100%{box-shadow:0 0 6px #FF9800}50%{box-shadow:0 0 18px #FFD700}}
 #skip-btn:hover{color:#aaa;border-color:#666}
 #gov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:14px}
 #gov.show{display:flex}
@@ -59,13 +82,27 @@ canvas{display:block;cursor:crosshair;touch-action:none}
 </head>
 <body>
 <div id="hud">
+  <div class="hi" id="hero-badge" style="color:#90EE90;font-weight:900"></div>
   <div class="hi">❤️<span class="hv" id="hl">20</span></div>
   <div class="hi">💰<span class="hv" id="hg">150</span></div>
   <div class="hi">🌊<span class="hv" id="hw">0</span></div>
   <div class="hi">⭐<span class="hv" id="hs">0</span></div>
+  <div class="hi"><button id="abtn" disabled>⚡技能</button></div>
   <div class="hi"><button id="wave-btn">開始波次</button></div>
 </div>
+<div id="eqrow">
+  <div class="eqslot" id="eq-weapon">⚔️ 武器 空</div>
+  <div class="eqslot" id="eq-armor">🛡️ 護甲 空</div>
+  <div class="eqslot" id="eq-access">💎 飾品 空</div>
+</div>
 <div id="canvas-wrap"><canvas id="gc"></canvas></div>
+
+<!-- Hero select -->
+<div id="hsov">
+  <div id="hs-title">🏰 選擇英雄</div>
+  <div style="color:#aaa;font-size:.8rem">每局只能選一次，被動永久生效</div>
+  <div id="hs-cards"></div>
+</div>
 <div id="tbar">
   <button class="tbtn sel" data-t="basic"     onclick="selT('basic')">🗼基礎砲<br><span class="tc">💰50</span></button>
   <button class="tbtn"     data-t="slow"      onclick="selT('slow')">❄️冰凍塔<br><span class="tc">💰75</span></button>
@@ -113,6 +150,53 @@ const PCELLS=new Set();
     else{const[x0,x1]=[Math.min(a.x,b.x),Math.max(a.x,b.x)];for(let x=x0;x<=x1;x++)PCELLS.add(x+','+a.y);}
   }
 })();
+
+// ── HEROES ──
+const HEROES=[
+  {id:'archer',em:'🏹',nm:'弓箭手',
+   dc:'射程+25%\n基礎砲傷害+30%',
+   abl:'箭雨：對所有敵人造成50傷害',
+   ap:s=>{s.rngM*=1.25;s.dmgM*=1.10;},
+   use:s=>{s.enemies.forEach(e=>{if(!e.dead)hit(e,50,'n');});addFT(W/2,H/2,'🏹 箭雨！','#90EE90');}},
+  {id:'mage',em:'🧙',nm:'冰霜法師',
+   dc:'減速效果+30%\n冰凍塔傷害×2',
+   abl:'全場冰封：所有敵人凍結4秒',
+   ap:s=>{s.slowX+=.30;s.slowDmgM=2.0;},
+   use:s=>{s.enemies.forEach(e=>{if(!e.dead)e.slt=4;});addFT(W/2,H/2,'❄️ 全場冰封！','#29B6F6');}},
+  {id:'knight',em:'⚔️',nm:'鐵甲騎士',
+   dc:'初始+8生命\n每波結束回1血',
+   abl:'護盾：免疫下3次扣血',
+   ap:s=>{s.lives+=8;s.lifeRegen=1;},
+   use:s=>{s.shield=3;addFT(W/2,H/2,'🛡️ 護盾激活！','#FFD700');}},
+  {id:'engineer',em:'⚙️',nm:'爆破工程師',
+   dc:'炸彈範圍+1格\n建塔費用-20%',
+   abl:'超級爆破：地圖中心大爆炸',
+   ap:s=>{s.bombR+=1.0;s.costReduce=.20;},
+   use:s=>{const cx=W/2,cy=H/2,r=4*CELL;s.enemies.forEach(e=>{if(!e.dead&&Math.hypot(e.x-cx,e.y-cy)<r)hit(e,200,'b');});mkParts(cx,cy,'#FF7043',30);addFT(cx,cy,'💣 超級爆破！','#FF7043');}},
+  {id:'storm',em:'⚡',nm:'閃電術士',
+   dc:'閃電連鎖+2目標\n射速+15%',
+   abl:'閃電風暴：隨機閃電攻擊所有敵人',
+   ap:s=>{s.chainBonus=2;s.spdM*=1.15;},
+   use:s=>{s.enemies.forEach(e=>{if(!e.dead)hit(e,80,'l');});addFT(W/2,H/2,'⚡ 閃電風暴！','#FFD700');}},
+];
+
+// ── EQUIPMENT CARDS ──
+const EQUIP=[
+  // Weapon
+  {ico:'🗡️',nm:'魔力之劍',dc:'全塔傷害+45%',rar:'eq',slot:'weapon',ap:s=>s.dmgM*=1.45},
+  {ico:'⚡',nm:'雷霆戰矛',dc:'閃電連鎖+2，傷害+25%',rar:'eq',slot:'weapon',ap:s=>{s.chainBonus=(s.chainBonus||0)+2;s.dmgM*=1.25;}},
+  {ico:'💣',nm:'爆破錘',dc:'炸彈範圍+1格，傷害+30%',rar:'eq',slot:'weapon',ap:s=>{s.bombR+=1;s.dmgM*=1.30;}},
+  {ico:'❄️',nm:'霜雪弓',dc:'減速+35%，冰塔傷害×2',rar:'eq',slot:'weapon',ap:s=>{s.slowX+=.35;s.slowDmgM=(s.slowDmgM||1)*2;}},
+  // Armor
+  {ico:'🛡️',nm:'龍鱗護甲',dc:'生命+10，每波回血2',rar:'eq',slot:'armor',ap:s=>{s.lives+=10;s.lifeRegen=(s.lifeRegen||0)+2;}},
+  {ico:'🔮',nm:'能量護盾',dc:'生命+6，射程+25%',rar:'eq',slot:'armor',ap:s=>{s.lives+=6;s.rngM*=1.25;}},
+  {ico:'🪬',nm:'詛咒護甲',dc:'金幣×2，但生命-4',rar:'eq',slot:'armor',ap:s=>{s.goldM*=2;s.lives=Math.max(1,s.lives-4);}},
+  // Accessory
+  {ico:'💍',nm:'速度之戒',dc:'全塔射速+40%',rar:'eq',slot:'access',ap:s=>s.spdM*=1.40},
+  {ico:'👑',nm:'黃金王冠',dc:'金幣×2.5',rar:'eq',slot:'access',ap:s=>s.goldM*=2.5},
+  {ico:'🧿',nm:'命運護符',dc:'射程+30%，生命+5',rar:'eq',slot:'access',ap:s=>{s.rngM*=1.30;s.lives+=5;}},
+  {ico:'🌟',nm:'命運之石',dc:'全屬性+25%',rar:'eq',slot:'access',ap:s=>{s.dmgM*=1.25;s.spdM*=1.25;s.rngM*=1.25;}},
+];
 
 // ── DEFS ──
 const TD={
@@ -162,19 +246,25 @@ const UPGRADES=[
   {ico:'🛡️',nm:'不死堡壘',    dc:'生命+15 傷害+40%',   rar:'l',ap:s=>{s.lives+=15;s.dmgM*=1.40;}},
 ];
 
-const RARITY_WT={c:60,r:25,e:12,l:3};
 function rollRarity(){
   const r=Math.random()*100;
   return r<3?'l':r<15?'e':r<40?'r':'c';
 }
 function drawCards(n){
   const result=[];
-  const byRar={c:[],r:[],e:[],l:[]};
-  UPGRADES.forEach(u=>byRar[u.rar].push(u));
+  // 15% chance one card is equipment
+  const allCards=[...UPGRADES];
+  // inject one equipment card randomly
+  if(Math.random()<.40){
+    const avEq=EQUIP.filter(e=>!S.equip[e.slot]);
+    if(avEq.length) allCards.push(avEq[Math.floor(Math.random()*avEq.length)]);
+  }
+  const byRar={c:[],r:[],e:[],l:[],eq:[]};
+  allCards.forEach(u=>byRar[u.rar]?.push(u)||byRar.c.push(u));
+  EQUIP.forEach(u=>byRar.eq.push(u));
   for(let i=0;i<n;i++){
     let rar=rollRarity(), pool=byRar[rar];
     if(!pool.length){rar='c';pool=byRar['c'];}
-    // avoid duplicates
     const avail=pool.filter(u=>!result.includes(u));
     result.push(avail.length?avail[Math.floor(Math.random()*avail.length)]:pool[Math.floor(Math.random()*pool.length)]);
   }
@@ -185,6 +275,7 @@ const RAR_META={
   r:{cls:'rr',bcls:'brr',ncls:'cr',lbl:'🔵 稀有'},
   e:{cls:'re',bcls:'bre',ncls:'ce',lbl:'🟣 史詩'},
   l:{cls:'rl',bcls:'brl',ncls:'cl',lbl:'🟡 傳說'},
+  eq:{cls:'req',bcls:'breq',ncls:'ceq',lbl:'🟠 裝備'},
 };
 
 // ── STATE ──
@@ -193,13 +284,60 @@ let S, fts=[], running=false, waveCleared=false;
 function initS(){
   S={lives:20,gold:150,wave:0,score:0,
      dmgM:1,spdM:1,rngM:1,goldM:1,slowX:0,bombR:0,
+     slowDmgM:1,chainBonus:0,lifeRegen:0,costReduce:0,shield:0,
+     hero:null,equip:{weapon:null,armor:null,access:null},
+     abilityReady:false,
      towers:[],enemies:[],projs:[],parts:[],
      selT:'basic',hov:null,
      waveQ:[],spawnI:0,spawnT:0,
      gameOver:false,lastT:0};
   running=false; waveCleared=false; fts=[];
-  document.getElementById('wave-btn').disabled=false;
-  updateHUD();
+  document.getElementById('wave-btn').disabled=true;
+  document.getElementById('abtn').disabled=true;
+  document.getElementById('abtn').classList.remove('rdy');
+  updateHUD(); updateEqUI();
+  showHeroSelect();
+}
+
+// ── HERO SELECT ──
+function showHeroSelect(){
+  const ov=document.getElementById('hsov');
+  const c=document.getElementById('hs-cards'); c.innerHTML='';
+  HEROES.forEach(h=>{
+    const d=document.createElement('div'); d.className='hcard';
+    d.innerHTML=`<div class="hem">${h.em}</div><div class="hnm">${h.nm}</div><div class="hdc">${h.dc.replace('\n','<br>')}</div><div class="habl">⚡ ${h.abl}</div>`;
+    d.onclick=()=>{
+      S.hero=h;
+      h.ap(S);
+      document.getElementById('hero-badge').textContent=h.em+' '+h.nm;
+      document.getElementById('abtn').textContent='⚡ '+h.nm+'技能';
+      ov.style.display='none';
+      document.getElementById('wave-btn').disabled=false;
+      updateHUD();
+    };
+    c.appendChild(d);
+  });
+  ov.style.display='flex';
+}
+
+function useAbility(){
+  if(!S.hero||!S.abilityReady||S.gameOver)return;
+  S.hero.use(S);
+  S.abilityReady=false;
+  const ab=document.getElementById('abtn');
+  ab.disabled=true; ab.classList.remove('rdy');
+}
+
+function updateEqUI(){
+  const slots={weapon:'eq-weapon',armor:'eq-armor',access:'eq-access'};
+  const icons={weapon:'⚔️',armor:'🛡️',access:'💎'};
+  const nms={weapon:'武器',armor:'護甲',access:'飾品'};
+  Object.keys(slots).forEach(k=>{
+    const el=document.getElementById(slots[k]);
+    const eq=S.equip[k];
+    if(eq){el.textContent=eq.ico+' '+eq.nm;el.className='eqslot on';}
+    else{el.textContent=icons[k]+' '+nms[k]+' 空';el.className='eqslot';}
+  });
 }
 
 // ── WAVE GEN ──
@@ -225,11 +363,12 @@ function mkEnemy(tp){
 // ── TOWER LOGIC ──
 function placeTower(gx,gy){
   const d=TD[S.selT];
-  if(S.gold<d.cost)return;
+  const cost=Math.round(d.cost*(1-(S.costReduce||0)));
+  if(S.gold<cost)return;
   if(PCELLS.has(gx+','+gy))return;
   if(S.towers.find(t=>t.gx===gx&&t.gy===gy))return;
   if(gx<0||gx>=COLS||gy<0||gy>=ROWS)return;
-  S.gold-=d.cost;
+  S.gold-=cost;
   S.towers.push({tp:S.selT,gx,gy,x:gx*CELL+CELL/2,y:gy*CELL+CELL/2,cd:0,ang:0});
   updateHUD();
 }
@@ -248,7 +387,7 @@ function towerTick(t,dt){
   t.ang=Math.atan2(tgt.y-t.y,tgt.x-t.x);
   t.cd=1/fireRate;
   if(t.tp==='lightning'){
-    S.projs.push({tp:'lightning',tower:t,chain:alive.slice(0,3),dmg,timer:.18,done:false});
+    S.projs.push({tp:'lightning',tower:t,chain:alive.slice(0,3+(S.chainBonus||0)),dmg,timer:.18,done:false});
   } else {
     S.projs.push({tp:t.tp,x:t.x,y:t.y,tgt,spd:320,dmg,tower:t,done:false});
   }
@@ -297,6 +436,8 @@ function projTick(p,dt){
 
 function hit(e,dmg,src){
   if(e.dead)return;
+  if(src!=='n'&&src!=='b'&&src!=='l'&&S.shield>0){S.shield--;return;}
+  if(src==='s') dmg*=(S.slowDmgM||1);
   e.hp-=dmg;
   addFT(e.x,e.y,'-'+Math.round(dmg),src==='s'?'#29B6F6':'#fff');
   if(e.hp<=0){
@@ -421,6 +562,13 @@ function loop(ts){
     fts=fts.filter(f=>f.life>0);
     if(S.spawnI>=S.waveQ.length&&S.enemies.length===0&&!waveCleared){
       waveCleared=true; running=false;
+      // Life regen
+      if(S.lifeRegen>0) S.lives=Math.min(S.lives+S.lifeRegen,30);
+      // Recharge ability
+      S.abilityReady=true;
+      const ab=document.getElementById('abtn');
+      ab.disabled=false; ab.classList.add('rdy');
+      updateHUD();
       setTimeout(showUpgrades,700);
     }
   }
@@ -450,6 +598,11 @@ function showUpgrades(cards){
     d.className='ucard '+m.cls;
     d.innerHTML=`<div><span class="rbadge ${m.bcls}">${m.lbl}</span></div><div class="uico">${u.ico}</div><div class="unm ${m.ncls}">${u.nm}</div><div class="udc">${u.dc}</div>`;
     d.onclick=()=>{
+      if(u.slot){
+        // Equipment card - equip into slot
+        S.equip[u.slot]=u;
+        updateEqUI();
+      }
       u.ap(S);
       document.getElementById('uov').classList.remove('show');
       document.getElementById('wave-btn').disabled=false;
@@ -488,6 +641,7 @@ function gameOver(){
 function restart(){
   document.getElementById('gov').classList.remove('show');
   document.getElementById('uov').classList.remove('show');
+  document.getElementById('hero-badge').textContent='';
   initS();
   requestAnimationFrame(loop);
 }
@@ -508,15 +662,18 @@ canvas.addEventListener('mousemove',e=>{S.hov=getCell(e);});
 canvas.addEventListener('mouseleave',()=>{S.hov=null;});
 canvas.addEventListener('touchstart',e=>{e.preventDefault();const c=getCell(e);placeTower(c.x,c.y);},{passive:false});
 document.getElementById('wave-btn').addEventListener('click',startWave);
+document.getElementById('abtn').addEventListener('click',useAbility);
 
 // ── HUD ──
 function updateHUD(){
-  document.getElementById('hl').textContent=S.lives;
+  document.getElementById('hl').textContent=S.lives+(S.shield>0?' 🛡'+S.shield:'');
   document.getElementById('hg').textContent=S.gold;
   document.getElementById('hw').textContent=S.wave;
   document.getElementById('hs').textContent=S.score;
   document.querySelectorAll('.tbtn').forEach(b=>{
-    b.classList.toggle('na',S.gold<TD[b.dataset.t].cost);
+    const cost=Math.round(TD[b.dataset.t].cost*(1-(S.costReduce||0)));
+    b.querySelector('.tc').textContent='💰'+cost;
+    b.classList.toggle('na',S.gold<cost);
   });
 }
 
