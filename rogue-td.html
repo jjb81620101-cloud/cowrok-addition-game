@@ -79,6 +79,8 @@ canvas{display:block;cursor:crosshair;touch-action:none}
 #abtn:disabled{opacity:.35;cursor:not-allowed;filter:grayscale(1)}
 #abtn.rdy{animation:abglow 1.5s ease-in-out infinite}
 @keyframes abglow{0%,100%{box-shadow:0 0 6px #FF9800}50%{box-shadow:0 0 18px #FFD700}}
+.spdbtn{border:1px solid #444;border-radius:6px;padding:4px 8px;background:rgba(255,255,255,.05);color:#888;cursor:pointer;font-family:inherit;font-size:.8rem;font-weight:700;transition:all .15s}
+.spdbtn.active{background:rgba(255,215,0,.2);border-color:#FFD700;color:#FFD700}
 #skip-btn:hover{color:#aaa;border-color:#666}
 #gov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:14px}
 #gov.show{display:flex}
@@ -96,6 +98,11 @@ canvas{display:block;cursor:crosshair;touch-action:none}
   <div class="hi">⭐<span class="hv" id="hs">0</span></div>
   <div class="hi"><button id="abtn" disabled>⚡技能</button></div>
   <div class="hi"><button id="wave-btn">開始波次</button></div>
+  <div class="hi" style="gap:3px">
+    <button class="spdbtn active" onclick="setSpd(1)">×1</button>
+    <button class="spdbtn" onclick="setSpd(2)">×2</button>
+    <button class="spdbtn" onclick="setSpd(3)">×3</button>
+  </div>
 </div>
 <div id="eqrow">
   <div class="eqslot" id="eq-weapon">⚔️ 武器 空</div>
@@ -145,6 +152,11 @@ canvas{display:block;cursor:crosshair;touch-action:none}
 const canvas=document.getElementById('gc'), ctx=canvas.getContext('2d');
 const COLS=20, ROWS=13;
 let CELL, W, H;
+let gameSpeed=1;
+function setSpd(n){
+  gameSpeed=n;
+  document.querySelectorAll('.spdbtn').forEach(b=>b.classList.toggle('active',b.textContent==='×'+n));
+}
 
 function resize(){
   const mw=Math.min(window.innerWidth,680);
@@ -222,10 +234,10 @@ const TD={
   lightning:{cost:125,range:3.2,dmg:18, spd:1.4,col:'#FFD700',em:'⚡',nm:'閃電塔'},
 };
 const ED={
-  normal:{hp:80, spd:55, rw:10,col:'#E53935',em:'👾',sz:.33},
-  fast:  {hp:40, spd:115,rw:14,col:'#FF9800',em:'💨',sz:.26},
-  tank:  {hp:320,spd:32, rw:28,col:'#6D4C41',em:'🛡️',sz:.44},
-  boss:  {hp:900,spd:38, rw:75,col:'#7B1FA2',em:'👹',sz:.55},
+  normal:{hp:80, spd:38, rw:10,col:'#E53935',em:'👾',sz:.33},
+  fast:  {hp:40, spd:75, rw:14,col:'#FF9800',em:'💨',sz:.26},
+  tank:  {hp:320,spd:22, rw:28,col:'#6D4C41',em:'🛡️',sz:.44},
+  boss:  {hp:900,spd:26, rw:75,col:'#7B1FA2',em:'👹',sz:.55},
 };
 // rarity: c=普通 r=稀有 e=史詩 l=傳說  weight: c=60 r=25 e=12 l=3
 const UPGRADES=[
@@ -656,7 +668,7 @@ function draw(){
 // ── LOOP ──
 function loop(ts){
   if(S.gameOver)return;
-  const dt=Math.min((ts-(S.lastT||ts))/1000,.05); S.lastT=ts;
+  const dt=Math.min((ts-(S.lastT||ts))/1000,.05)*gameSpeed; S.lastT=ts;
 
   if(running){
     S.spawnT-=dt;
