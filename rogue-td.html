@@ -234,10 +234,10 @@ const TD={
   lightning:{cost:125,range:3.2,dmg:18, spd:1.4,col:'#FFD700',em:'⚡',nm:'閃電塔'},
 };
 const ED={
-  normal:{hp:80, spd:38, rw:10,col:'#E53935',em:'👾',sz:.33},
-  fast:  {hp:40, spd:75, rw:14,col:'#FF9800',em:'💨',sz:.26},
-  tank:  {hp:320,spd:22, rw:28,col:'#6D4C41',em:'🛡️',sz:.44},
-  boss:  {hp:900,spd:26, rw:75,col:'#7B1FA2',em:'👹',sz:.55},
+  normal:{hp:80, spd:11, rw:20,col:'#E53935',em:'👾',sz:.33},
+  fast:  {hp:40, spd:22, rw:20,col:'#FF9800',em:'💨',sz:.26},
+  tank:  {hp:320,spd:7,  rw:20,col:'#6D4C41',em:'🛡️',sz:.44},
+  boss:  {hp:900,spd:8,  rw:20,col:'#7B1FA2',em:'👹',sz:.55},
 };
 // rarity: c=普通 r=稀有 e=史詩 l=傳說  weight: c=60 r=25 e=12 l=3
 const UPGRADES=[
@@ -467,7 +467,7 @@ function updateEqUI(){
 
 // ── WAVE GEN ──
 function genWave(n){
-  const arr=[], cnt=8+n*3, boss=n%5===0&&n>0;
+  const arr=[], cnt=10, boss=n%5===0&&n>0;
   for(let i=0;i<cnt;i++){
     let tp;
     if(boss&&i===Math.floor(cnt/2))tp='boss';
