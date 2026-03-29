@@ -288,20 +288,33 @@ body {
 // ══════════════════════════════════════════
 //  SPEECH
 // ══════════════════════════════════════════
+let _currentAudio = null;
 function speakThai(text, btnId, rate) {
   const btn = document.getElementById(btnId || 'q-speaker-btn');
   if (btn) btn.classList.add('playing');
   const done = () => { if (btn) btn.classList.remove('playing'); };
-  if (window.responsiveVoice && responsiveVoice.voiceSupport()) {
-    responsiveVoice.cancel();
-    responsiveVoice.speak(text, 'Thai Female', { rate: rate || 0.85, pitch: 1, volume: 1, onend: done, onerror: done });
-  } else if (window.speechSynthesis) {
-    speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'th-TH'; u.rate = rate || 0.85;
-    u.onend = done; u.onerror = done;
-    speechSynthesis.speak(u);
-  }
+
+  // Stop any playing audio
+  if (_currentAudio) { _currentAudio.pause(); _currentAudio = null; }
+  if (window.speechSynthesis) speechSynthesis.cancel();
+
+  // Google Translate TTS (natural human-like voice)
+  const url = `https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=th&client=gtx&q=${encodeURIComponent(text)}`;
+  const audio = new Audio(url);
+  _currentAudio = audio;
+  audio.onended  = done;
+  audio.onerror  = () => {
+    // Fallback: ResponsiveVoice → Web Speech API
+    if (window.responsiveVoice && responsiveVoice.voiceSupport()) {
+      responsiveVoice.speak(text, 'Thai Female', { rate: rate || 0.85, onend: done, onerror: done });
+    } else if (window.speechSynthesis) {
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'th-TH'; u.rate = rate || 0.85;
+      u.onend = done; u.onerror = done;
+      speechSynthesis.speak(u);
+    } else { done(); }
+  };
+  audio.play().catch(() => audio.onerror());
 }
 
 // ══════════════════════════════════════════
