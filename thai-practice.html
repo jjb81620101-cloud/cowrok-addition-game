@@ -344,13 +344,21 @@ const CONSONANTS = [
   ['ส','s', 'ส เสือ',  1], ['ห','h', 'ห หีบ',  1], ['อ','–', 'อ อ่าง', 0],
 ];
 
+// vowFn(c, t): c=consonant, t=tone mark
+// Unicode rule: above-vowels (อิ อี) must come BEFORE tone mark
 const VOWELS = [
-  [c=>c+'า',   'สระ อา', 'ยาว a'], [c=>c+'ะ',   'สระ อะ', 'สั้น a'],
-  [c=>c+'ิ',   'สระ อิ', 'สั้น i'], [c=>c+'ี',   'สระ อี', 'ยาว i'],
-  [c=>c+'ุ',   'สระ อุ', 'สั้น u'], [c=>c+'ู',   'สระ อู', 'ยาว u'],
-  [c=>'เ'+c,   'สระ เอ', 'ee'],     [c=>'แ'+c,   'สระ แอ', 'ae'],
-  [c=>'โ'+c,   'สระ โอ', 'oo'],     [c=>c+'อ',   'สระ อ',  'สั้น o'],
-  [c=>'เ'+c+'า','สระ เอา','ao'],    [c=>'เ'+c+'ีย','สระ เอีย','ia'],
+  [(c,t)=>c+t+'า',       'สระ อา',  'ยาว a'],
+  [(c,t)=>c+t+'ะ',       'สระ อะ',  'สั้น a'],
+  [(c,t)=>c+'\u0E34'+t,  'สระ อิ',  'สั้น i'],   // ก + ิ + tone ✅
+  [(c,t)=>c+'\u0E35'+t,  'สระ อี',  'ยาว i'],    // ก + ี + tone ✅
+  [(c,t)=>c+t+'ุ',       'สระ อุ',  'สั้น u'],
+  [(c,t)=>c+t+'ู',       'สระ อู',  'ยาว u'],
+  [(c,t)=>'เ'+c+t,       'สระ เอ',  'ee'],
+  [(c,t)=>'แ'+c+t,       'สระ แอ',  'ae'],
+  [(c,t)=>'โ'+c+t,       'สระ โอ',  'oo'],
+  [(c,t)=>c+t+'อ',       'สระ อ',   'สั้น o'],
+  [(c,t)=>'เ'+c+t+'า',   'สระ เอา', 'ao'],
+  [(c,t)=>'เ'+c+'\u0E35'+t+'ย', 'สระ เอีย', 'ia'], // เ + ก + ี + tone + ย ✅
 ];
 
 // TONES: [mark, name, display_label]
@@ -362,7 +370,7 @@ const TONES = [
   ['\u0E4B', 'จัตวา', 'จัตวา ๋'],
 ];
 
-function makeSyl(conChar, toneChar, vowFn) { return vowFn(conChar + toneChar); }
+function makeSyl(conChar, toneChar, vowFn) { return vowFn(conChar, toneChar); }
 
 // Valid tone INDICES for each consonant class
 function validTonesFor(cls) {
@@ -550,7 +558,7 @@ function renderQuiz() {
   vowRow.innerHTML = '';
   curVowOpts.forEach((vIdx, pos) => {
     const v = VOWELS[vIdx];
-    const form = v[0]('อ');
+    const form = v[0]('อ', '');
     const btn = document.createElement('button');
     btn.className = 'sel-btn';
     btn.id = 'q-v-' + pos;
@@ -645,7 +653,7 @@ function renderMatch() {
   // Vowel tiles
   curVowOpts.forEach((vIdx, pos) => {
     const v = VOWELS[vIdx];
-    const tile = makeTile('vow-tile', 'm-v-' + pos, v[0]('อ'), v[1]);
+    const tile = makeTile('vow-tile', 'm-v-' + pos, v[0]('อ', ''), v[1]);
     tile.addEventListener('click', () => {
       if (roundAnswered) return;
       document.querySelectorAll('.vow-tile').forEach(x => x.classList.remove('selected'));
