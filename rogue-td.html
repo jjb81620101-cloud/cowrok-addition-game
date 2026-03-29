@@ -20,15 +20,36 @@ canvas{display:block;cursor:crosshair;touch-action:none}
 .tbtn.sel{border-color:#FFD700;background:rgba(255,215,0,.15);box-shadow:0 0 8px #FFD700}
 .tbtn .tc{color:#FFD700;font-size:.7rem}
 .tbtn.na{opacity:.35;cursor:not-allowed}
-#uov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:100;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+#uov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:100;align-items:center;justify-content:center;flex-direction:column;gap:12px;overflow-y:auto;padding:16px 8px}
 #uov.show{display:flex}
 #utitle{font-size:1.5rem;font-weight:900;color:#FFD700;text-shadow:0 0 20px #FFD700}
 #ucards{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
-.ucard{background:linear-gradient(135deg,#2a1050,#1a0835);border:2px solid #7B2FBE;border-radius:14px;padding:18px 20px;min-width:150px;max-width:180px;cursor:pointer;transition:all .2s;text-align:center}
-.ucard:hover{border-color:#FFD700;transform:translateY(-4px);box-shadow:0 8px 24px rgba(255,215,0,.3)}
-.uico{font-size:2.2rem;margin-bottom:6px}
-.unm{font-weight:900;font-size:.95rem;color:#E8AAFF;margin-bottom:4px}
-.udc{font-size:.75rem;color:#aaa;line-height:1.4}
+.ucard{border-radius:16px;padding:16px 18px;min-width:145px;max-width:175px;cursor:pointer;transition:all .2s;text-align:center;position:relative;overflow:hidden}
+.ucard:hover{transform:translateY(-5px)}
+/* Rarity styles */
+.rc{background:linear-gradient(135deg,#2a2a2a,#1a1a1a);border:2px solid #888}
+.rc:hover{box-shadow:0 8px 20px rgba(150,150,150,.4);border-color:#ccc}
+.rr{background:linear-gradient(135deg,#0d2a4a,#071a2e);border:2px solid #2196F3}
+.rr:hover{box-shadow:0 8px 20px rgba(33,150,243,.5);border-color:#64B5F6}
+.re{background:linear-gradient(135deg,#2a0d4a,#1a072e);border:2px solid #9C27B0}
+.re:hover{box-shadow:0 8px 24px rgba(156,39,176,.6);border-color:#CE93D8}
+.rl{background:linear-gradient(135deg,#4a3500,#2e2000);border:2px solid #FFD700;animation:lglow 2s ease-in-out infinite}
+.rl:hover{box-shadow:0 8px 28px rgba(255,215,0,.7);border-color:#FFF176}
+@keyframes lglow{0%,100%{box-shadow:0 0 8px rgba(255,215,0,.4)}50%{box-shadow:0 0 20px rgba(255,215,0,.8)}}
+.rbadge{font-size:.65rem;font-weight:900;padding:2px 7px;border-radius:50px;display:inline-block;margin-bottom:6px}
+.brc{background:#555;color:#ddd}
+.brr{background:#1565C0;color:#90CAF9}
+.bre{background:#6A1B9A;color:#E1BEE7}
+.brl{background:#F57F17;color:#FFF9C4;animation:lglow 1.5s infinite}
+.uico{font-size:2.2rem;margin-bottom:5px}
+.unm{font-weight:900;font-size:.9rem;margin-bottom:4px}
+.unm.cc{color:#ccc}.unm.cr{color:#90CAF9}.unm.ce{color:#E1BEE7}.unm.cl{color:#FFF176}
+.udc{font-size:.72rem;color:#aaa;line-height:1.4}
+#reroll-btn{background:linear-gradient(135deg,#3a3a3a,#222);border:2px solid #888;border-radius:50px;padding:8px 20px;color:#ccc;font-weight:700;cursor:pointer;font-family:inherit;font-size:.85rem;transition:all .2s}
+#reroll-btn:hover:not(:disabled){border-color:#FFD700;color:#FFD700}
+#reroll-btn:disabled{opacity:.4;cursor:not-allowed}
+#skip-btn{background:transparent;border:1px solid #444;border-radius:50px;padding:6px 16px;color:#666;font-weight:700;cursor:pointer;font-family:inherit;font-size:.8rem}
+#skip-btn:hover{color:#aaa;border-color:#666}
 #gov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:14px}
 #gov.show{display:flex}
 #gotitle{font-size:2.2rem;font-weight:900;color:#FF4444}
@@ -53,9 +74,13 @@ canvas{display:block;cursor:crosshair;touch-action:none}
 </div>
 
 <div id="uov">
-  <div id="utitle">✨ 選擇強化！</div>
-  <div style="color:#aaa;font-size:.85rem">波次 <span id="uwn"></span> 完成</div>
+  <div id="utitle">✨ 抽卡強化！</div>
+  <div style="color:#aaa;font-size:.8rem">波次 <span id="uwn"></span> 完成 ｜ 傳說3% 史詩12% 稀有25% 普通60%</div>
   <div id="ucards"></div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <button id="reroll-btn">🎲 重抽 <span id="reroll-cost">💰30</span></button>
+    <button id="skip-btn">跳過</button>
+  </div>
 </div>
 <div id="gov">
   <div id="gotitle">💀 基地淪陷！</div>
@@ -102,20 +127,65 @@ const ED={
   tank:  {hp:320,spd:32, rw:28,col:'#6D4C41',em:'🛡️',sz:.44},
   boss:  {hp:900,spd:38, rw:75,col:'#7B1FA2',em:'👹',sz:.55},
 };
+// rarity: c=普通 r=稀有 e=史詩 l=傳說  weight: c=60 r=25 e=12 l=3
 const UPGRADES=[
-  {ico:'⚔️',nm:'攻擊強化', dc:'所有塔傷害+25%',  ap:s=>s.dmgM*=1.25},
-  {ico:'🎯',nm:'射速強化', dc:'所有塔射速+20%',  ap:s=>s.spdM*=1.20},
-  {ico:'🔭',nm:'射程強化', dc:'所有塔射程+20%',  ap:s=>s.rngM*=1.20},
-  {ico:'💰',nm:'貪婪',     dc:'擊殺金幣+30%',    ap:s=>s.goldM*=1.30},
-  {ico:'❄️',nm:'冰封加深', dc:'減速+20%',        ap:s=>s.slowX+=.20},
-  {ico:'💥',nm:'爆炸擴散', dc:'炸彈範圍+0.5格',  ap:s=>s.bombR+=.5},
-  {ico:'❤️',nm:'緊急修復', dc:'恢復3生命',        ap:s=>s.lives=Math.min(s.lives+3,20)},
-  {ico:'🏰',nm:'強化防禦', dc:'增加5生命',        ap:s=>s.lives+=5},
-  {ico:'🎁',nm:'補給箱',   dc:'立即+100金幣',    ap:s=>s.gold+=100},
-  {ico:'🔥',nm:'烈焰強化', dc:'所有塔傷害+40%',  ap:s=>s.dmgM*=1.40},
-  {ico:'⚡',nm:'超速模式', dc:'所有塔射速+40%',  ap:s=>s.spdM*=1.40},
-  {ico:'🌐',nm:'廣域掃描', dc:'所有塔射程+35%',  ap:s=>s.rngM*=1.35},
+  // ── 普通 ──
+  {ico:'⚔️',nm:'攻擊強化 I',  dc:'所有塔傷害+20%',      rar:'c',ap:s=>s.dmgM*=1.20},
+  {ico:'🎯',nm:'射速強化 I',  dc:'所有塔射速+15%',      rar:'c',ap:s=>s.spdM*=1.15},
+  {ico:'🔭',nm:'射程強化 I',  dc:'所有塔射程+15%',      rar:'c',ap:s=>s.rngM*=1.15},
+  {ico:'💰',nm:'薄利多銷',    dc:'擊殺金幣+20%',        rar:'c',ap:s=>s.goldM*=1.20},
+  {ico:'🎁',nm:'補給箱',      dc:'立即+80金幣',         rar:'c',ap:s=>s.gold+=80},
+  {ico:'❤️',nm:'急救包',      dc:'恢復3生命',           rar:'c',ap:s=>s.lives=Math.min(s.lives+3,30)},
+  {ico:'❄️',nm:'冰封初階',    dc:'減速效果+15%',        rar:'c',ap:s=>s.slowX+=.15},
+  {ico:'💥',nm:'爆炸初階',    dc:'炸彈範圍+0.4格',      rar:'c',ap:s=>s.bombR+=.4},
+  // ── 稀有 ──
+  {ico:'⚔️',nm:'攻擊強化 II', dc:'所有塔傷害+35%',      rar:'r',ap:s=>s.dmgM*=1.35},
+  {ico:'🎯',nm:'射速強化 II', dc:'所有塔射速+30%',      rar:'r',ap:s=>s.spdM*=1.30},
+  {ico:'🔭',nm:'射程強化 II', dc:'所有塔射程+30%',      rar:'r',ap:s=>s.rngM*=1.30},
+  {ico:'💰',nm:'貪婪',        dc:'擊殺金幣+40%',        rar:'r',ap:s=>s.goldM*=1.40},
+  {ico:'🎁',nm:'大補給',      dc:'立即+200金幣',        rar:'r',ap:s=>s.gold+=200},
+  {ico:'🏰',nm:'強化防禦',    dc:'最大生命+5',          rar:'r',ap:s=>s.lives+=5},
+  {ico:'❄️',nm:'冰封加深',    dc:'減速效果+25%',        rar:'r',ap:s=>s.slowX+=.25},
+  {ico:'💥',nm:'爆炸擴散',    dc:'炸彈範圍+0.8格',      rar:'r',ap:s=>s.bombR+=.8},
+  // ── 史詩 ──
+  {ico:'🔥',nm:'烈焰強化',    dc:'所有塔傷害+55%',      rar:'e',ap:s=>s.dmgM*=1.55},
+  {ico:'⚡',nm:'超速模式',    dc:'所有塔射速+50%',      rar:'e',ap:s=>s.spdM*=1.50},
+  {ico:'🌐',nm:'廣域掃描',    dc:'所有塔射程+50%',      rar:'e',ap:s=>s.rngM*=1.50},
+  {ico:'💎',nm:'鑽石財庫',    dc:'擊殺金幣×2',         rar:'e',ap:s=>s.goldM*=2.0},
+  {ico:'🩸',nm:'吸血改造',    dc:'傷害+30% 且回血',     rar:'e',ap:s=>{s.dmgM*=1.30;s.lives=Math.min(s.lives+8,30);}},
+  {ico:'🌀',nm:'時間之渦',    dc:'射速+40% 射程+30%',  rar:'e',ap:s=>{s.spdM*=1.40;s.rngM*=1.30;}},
+  {ico:'💣',nm:'超級炸彈',    dc:'炸彈範圍+1.5格 傷+30%',rar:'e',ap:s=>{s.bombR+=1.5;s.dmgM*=1.30;}},
+  // ── 傳說 ──
+  {ico:'🌟',nm:'神聖洗禮',    dc:'全屬性+50%',          rar:'l',ap:s=>{s.dmgM*=1.5;s.spdM*=1.5;s.rngM*=1.5;}},
+  {ico:'👑',nm:'黃金帝王',    dc:'金幣×3 傷害+60%',    rar:'l',ap:s=>{s.goldM*=3.0;s.dmgM*=1.60;}},
+  {ico:'⚔️',nm:'滅世神劍',    dc:'所有塔傷害×2.5',     rar:'l',ap:s=>s.dmgM*=2.5},
+  {ico:'🛡️',nm:'不死堡壘',    dc:'生命+15 傷害+40%',   rar:'l',ap:s=>{s.lives+=15;s.dmgM*=1.40;}},
 ];
+
+const RARITY_WT={c:60,r:25,e:12,l:3};
+function rollRarity(){
+  const r=Math.random()*100;
+  return r<3?'l':r<15?'e':r<40?'r':'c';
+}
+function drawCards(n){
+  const result=[];
+  const byRar={c:[],r:[],e:[],l:[]};
+  UPGRADES.forEach(u=>byRar[u.rar].push(u));
+  for(let i=0;i<n;i++){
+    let rar=rollRarity(), pool=byRar[rar];
+    if(!pool.length){rar='c';pool=byRar['c'];}
+    // avoid duplicates
+    const avail=pool.filter(u=>!result.includes(u));
+    result.push(avail.length?avail[Math.floor(Math.random()*avail.length)]:pool[Math.floor(Math.random()*pool.length)]);
+  }
+  return result;
+}
+const RAR_META={
+  c:{cls:'rc',bcls:'brc',ncls:'cc',lbl:'⬜ 普通'},
+  r:{cls:'rr',bcls:'brr',ncls:'cr',lbl:'🔵 稀有'},
+  e:{cls:'re',bcls:'bre',ncls:'ce',lbl:'🟣 史詩'},
+  l:{cls:'rl',bcls:'brl',ncls:'cl',lbl:'🟡 傳說'},
+};
 
 // ── STATE ──
 let S, fts=[], running=false, waveCleared=false;
@@ -369,21 +439,42 @@ function startWave(){
   document.getElementById('wave-btn').disabled=true;
 }
 
-function showUpgrades(){
-  const pool=[...UPGRADES].sort(()=>Math.random()-.5).slice(0,3);
+let rerollCost=30;
+function showUpgrades(cards){
+  cards=cards||drawCards(3);
   document.getElementById('uwn').textContent=S.wave;
   const c=document.getElementById('ucards'); c.innerHTML='';
-  pool.forEach(u=>{
-    const d=document.createElement('div'); d.className='ucard';
-    d.innerHTML=`<div class="uico">${u.ico}</div><div class="unm">${u.nm}</div><div class="udc">${u.dc}</div>`;
+  cards.forEach(u=>{
+    const m=RAR_META[u.rar];
+    const d=document.createElement('div');
+    d.className='ucard '+m.cls;
+    d.innerHTML=`<div><span class="rbadge ${m.bcls}">${m.lbl}</span></div><div class="uico">${u.ico}</div><div class="unm ${m.ncls}">${u.nm}</div><div class="udc">${u.dc}</div>`;
     d.onclick=()=>{
       u.ap(S);
       document.getElementById('uov').classList.remove('show');
       document.getElementById('wave-btn').disabled=false;
+      rerollCost=30;
       updateHUD();
     };
     c.appendChild(d);
   });
+  // Reroll button
+  const rb=document.getElementById('reroll-btn');
+  document.getElementById('reroll-cost').textContent='💰'+rerollCost;
+  rb.disabled=S.gold<rerollCost;
+  rb.onclick=()=>{
+    if(S.gold<rerollCost)return;
+    S.gold-=rerollCost;
+    rerollCost=Math.round(rerollCost*1.6);
+    showUpgrades(drawCards(3));
+    updateHUD();
+  };
+  // Skip button
+  document.getElementById('skip-btn').onclick=()=>{
+    document.getElementById('uov').classList.remove('show');
+    document.getElementById('wave-btn').disabled=false;
+    rerollCost=30;
+  };
   document.getElementById('uov').classList.add('show');
 }
 
