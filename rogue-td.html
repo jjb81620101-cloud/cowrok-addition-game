@@ -354,7 +354,7 @@ function draw3Cards(pool){
 // ── STATE ──
 const PULL_COST=50;
 let S, fts=[], parts=[], running=false, stageCleared=false, waveCleared=false;
-let cdTimer=0, cdActive=false, gameSpeed=1;
+let cdTimer=0, cdActive=false;
 
 function initS(){
   S={lives:20,gold:200,stage:0,waveInStage:0,score:0,
@@ -785,7 +785,7 @@ function renderCards(containerId,cards,onPick){
     const m=RARITY_META[card.r];
     const slotLabel=card.slot?` [${{weapon:'武器',armor:'護甲',access:'飾品'}[card.slot]}]`:'';
     const d=document.createElement('div'); d.className='gcard '+m.cls;
-    d.innerHTML=`<div><span class="rbadge ${m.bcls}">${m.lbl}${slotLabel}</span></div><div class="cico">${card.ico}</div><div class="cnm ${m.ncls}">${card.nm}</div><div class="cdc">${card.dc}</div>`;
+    d.innerHTML=`<div><span class="rbg ${m.bcls}">${m.lbl}${slotLabel}</span></div><div class="cico">${card.ico}</div><div class="cnm ${m.ncls}">${card.nm}</div><div class="cdc">${card.dc}</div>`;
     d.onclick=()=>onPick(card);
     c.appendChild(d);
   });
